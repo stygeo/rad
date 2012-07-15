@@ -2,6 +2,7 @@
 *.slo
 *.lo
 *.o
+rad
 
 # Compiled Dynamic libraries
 *.so
@@ -10,3 +11,7 @@
 *.lai
 *.la
 *.a
+.*.un~
+
+# Debug objects
+*.dSYM
