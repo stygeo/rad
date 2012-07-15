@@ -1,0 +1,238 @@
+Terminals which are not used
+
+   ERROR_TOKEN
+   IF
+   ELSE
+   PRINT
+   INPUT
+   EQUAL
+   CONCAT
+   OPEN_PAR
+   CLOSE_PAR
+   BEGIN_CS
+   END_CS
+   DEF
+   THEN
+   END
+   COMMA
+   RETURN
+   NUMBER
+
+
+State 9 conflicts: 1 shift/reduce
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: statement_list
+
+    2 statement_list: statement_list statement
+    3               | /* empty */
+
+    4 statement: END_STMT
+    5          | assign_expression END_STMT
+    6          | getlocal END_STMT
+    7          | putstring END_STMT
+
+    8 assign_expression: ID ASSIGN assign_expression
+    9                  | putstring
+
+   10 putstring: STRING
+
+   11 getlocal: ID
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+ERROR_TOKEN (258)
+IF (259)
+ELSE (260)
+PRINT (261)
+INPUT (262)
+ASSIGN (263) 8
+EQUAL (264)
+CONCAT (265)
+END_STMT (266) 4 5 6 7
+OPEN_PAR (267)
+CLOSE_PAR (268)
+BEGIN_CS (269)
+END_CS (270)
+DEF (271)
+THEN (272)
+END (273)
+COMMA (274)
+RETURN (275)
+ID (276) 8 11
+STRING (277) 10
+NUMBER (278)
+
+
+Nonterminals, with rules where they appear
+
+$accept (24)
+    on left: 0
+program (25)
+    on left: 1, on right: 0
+statement_list (26)
+    on left: 2 3, on right: 1 2
+statement (27)
+    on left: 4 5 6 7, on right: 2
+assign_expression (28)
+    on left: 8 9, on right: 5 8
+putstring (29)
+    on left: 10, on right: 7 9
+getlocal (30)
+    on left: 11, on right: 6
+
+
+state 0
+
+    0 $accept: . program $end
+
+    $default  reduce using rule 3 (statement_list)
+
+    program         go to state 1
+    statement_list  go to state 2
+
+
+state 1
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 3
+
+
+state 2
+
+    1 program: statement_list .
+    2 statement_list: statement_list . statement
+
+    END_STMT  shift, and go to state 4
+    ID        shift, and go to state 5
+    STRING    shift, and go to state 6
+
+    $default  reduce using rule 1 (program)
+
+    statement          go to state 7
+    assign_expression  go to state 8
+    putstring          go to state 9
+    getlocal           go to state 10
+
+
+state 3
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+state 4
+
+    4 statement: END_STMT .
+
+    $default  reduce using rule 4 (statement)
+
+
+state 5
+
+    8 assign_expression: ID . ASSIGN assign_expression
+   11 getlocal: ID .
+
+    ASSIGN  shift, and go to state 11
+
+    $default  reduce using rule 11 (getlocal)
+
+
+state 6
+
+   10 putstring: STRING .
+
+    $default  reduce using rule 10 (putstring)
+
+
+state 7
+
+    2 statement_list: statement_list statement .
+
+    $default  reduce using rule 2 (statement_list)
+
+
+state 8
+
+    5 statement: assign_expression . END_STMT
+
+    END_STMT  shift, and go to state 12
+
+
+state 9
+
+    7 statement: putstring . END_STMT
+    9 assign_expression: putstring .
+
+    END_STMT  shift, and go to state 13
+
+    END_STMT  [reduce using rule 9 (assign_expression)]
+
+
+state 10
+
+    6 statement: getlocal . END_STMT
+
+    END_STMT  shift, and go to state 14
+
+
+state 11
+
+    8 assign_expression: ID ASSIGN . assign_expression
+
+    ID      shift, and go to state 15
+    STRING  shift, and go to state 6
+
+    assign_expression  go to state 16
+    putstring          go to state 17
+
+
+state 12
+
+    5 statement: assign_expression END_STMT .
+
+    $default  reduce using rule 5 (statement)
+
+
+state 13
+
+    7 statement: putstring END_STMT .
+
+    $default  reduce using rule 7 (statement)
+
+
+state 14
+
+    6 statement: getlocal END_STMT .
+
+    $default  reduce using rule 6 (statement)
+
+
+state 15
+
+    8 assign_expression: ID . ASSIGN assign_expression
+
+    ASSIGN  shift, and go to state 11
+
+
+state 16
+
+    8 assign_expression: ID ASSIGN assign_expression .
+
+    $default  reduce using rule 8 (assign_expression)
+
+
+state 17
+
+    9 assign_expression: putstring .
+
+    $default  reduce using rule 9 (assign_expression)
