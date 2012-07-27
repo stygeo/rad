@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "value.h"
 
 // The syntax tree node types
 enum rd_node_type {
@@ -9,7 +10,11 @@ enum rd_node_type {
   ASSIGN_EXPR,
   SET_LOCAL,
   GET_LOCAL,
-  PUT_STR
+  PUT_STR,
+  PUTS_STMT,
+  PUT_OBJ,
+  IFTHEN_STMT,
+  EQUAL_EXPR,
 };
 
 enum rd_data_type {
@@ -37,7 +42,7 @@ class rd_tree_node  {
     int coerce_to_string(int childno);
 
     rd_node_type type;                // what type of node is it?
-    char *cont;
+    rd_value *cont;
     std::vector<rd_tree_node*>child;  // pointers to childen
     rd_data_type rettype;             // the 'return' type of this node
   private:
@@ -46,5 +51,4 @@ class rd_tree_node  {
 
 typedef rd_tree_node *SyntTree;
 typedef rd_tree_node *SyntTree;
-
 

@@ -41,7 +41,7 @@
      ERROR_TOKEN = 258,
      IF = 259,
      ELSE = 260,
-     PRINT = 261,
+     PUTS = 261,
      INPUT = 262,
      ASSIGN = 263,
      EQUAL = 264,
@@ -73,6 +73,7 @@
 
 #include "lex.h"     // the lexer
 #include "treenode.h" // the syntax tree
+#include "value.h"
 
 extern SyntTree tree;
 
@@ -90,14 +91,14 @@ char *make_name();
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE 
-#line 30 "rules/rad.y"
+#line 31 "rules/rad.y"
 {
   char     *str;     // a char string
   int       num;     // a number
   rd_tree_node *tnode;   // node in the syntax tree
 }
 /* Line 2616 of glr.c.  */
-#line 101 "src/parser.hpp"
+#line 102 "src/parser.hpp"
 	YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

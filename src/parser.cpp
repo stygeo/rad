@@ -182,16 +182,16 @@ YYID (i)
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   12
+#define YYLAST   21
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  24
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  7
+#define YYNNTS  9
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  12
+#define YYNRULES  18
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  18
+#define YYNSTATES  27
 /* YYMAXRHS -- Maximum number of symbols on right-hand side of rule.  */
 #define YYMAXRHS 3
 /* YYMAXLEFT -- Maximum number of symbols to the left of a handle
@@ -244,23 +244,25 @@ static const unsigned char yytranslate[] =
    YYRHS.  */
 static const unsigned char yyprhs[] =
 {
-       0,     0,     3,     5,     8,     9,    11,    14,    17,    20,
-      24,    26,    28
+       0,     0,     3,     5,     8,     9,    11,    15,    18,    21,
+      24,    28,    30,    32,    34,    36,    38,    40,    42
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const signed char yyrhs[] =
 {
       25,     0,    -1,    26,    -1,    26,    27,    -1,    -1,    11,
-      -1,    28,    11,    -1,    30,    11,    -1,    29,    11,    -1,
-      21,     8,    28,    -1,    29,    -1,    22,    -1,    21,    -1
+      -1,     6,    29,    11,    -1,    28,    11,    -1,    32,    11,
+      -1,    30,    11,    -1,    21,     8,    28,    -1,    30,    -1,
+      31,    -1,    32,    -1,    31,    -1,    30,    -1,    22,    -1,
+      23,    -1,    21,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned char yyrline[] =
 {
-       0,    65,    65,    69,    70,    74,    75,    76,    77,    81,
-      87,    91,    94
+       0,    65,    65,    69,    70,    74,    75,    76,    77,    78,
+      82,    88,    89,    93,    94,    95,    99,   103,   107
 };
 #endif
 
@@ -269,41 +271,41 @@ static const unsigned char yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "ERROR_TOKEN", "IF", "ELSE", "PRINT",
+  "$end", "error", "$undefined", "ERROR_TOKEN", "IF", "ELSE", "PUTS",
   "INPUT", "ASSIGN", "EQUAL", "CONCAT", "END_STMT", "OPEN_PAR",
   "CLOSE_PAR", "BEGIN_CS", "END_CS", "DEF", "THEN", "END", "COMMA",
   "RETURN", "ID", "STRING", "NUMBER", "$accept", "program",
-  "statement_list", "statement", "assign_expression", "putstring",
-  "getlocal", 0
+  "statement_list", "statement", "assign_expression", "simple_expression",
+  "putstring", "putobject", "getlocal", 0
 };
 #endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const unsigned char yyr1[] =
 {
-       0,    24,    25,    26,    26,    27,    27,    27,    27,    28,
-      28,    29,    30
+       0,    24,    25,    26,    26,    27,    27,    27,    27,    27,
+      28,    28,    28,    29,    29,    29,    30,    31,    32
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const unsigned char yyr2[] =
 {
-       0,     2,     1,     2,     0,     1,     2,     2,     2,     3,
-       1,     1,     1
+       0,     2,     1,     2,     0,     1,     3,     2,     2,     2,
+       3,     1,     1,     1,     1,     1,     1,     1,     1
 };
 
 /* YYDPREC[RULE-NUM] -- Dynamic precedence of rule #RULE-NUM (0 if none).  */
 static const unsigned char yydprec[] =
 {
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0
 };
 
 /* YYMERGER[RULE-NUM] -- Index of merging function for rule #RULE-NUM.  */
 static const unsigned char yymerger[] =
 {
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0
 };
 
 /* YYDEFACT[S] -- default rule to reduce with in state S when YYTABLE
@@ -311,29 +313,31 @@ static const unsigned char yymerger[] =
    error.  */
 static const unsigned char yydefact[] =
 {
-       4,     0,     2,     1,     5,    12,    11,     3,     0,     0,
-       0,     0,     6,     8,     7,     0,     9,    10
+       4,     0,     2,     1,     0,     5,    18,    16,    17,     3,
+       0,     0,    12,     0,    18,     0,    15,    14,    13,     0,
+       7,     9,     8,     6,     0,    10,    11
 };
 
 /* YYPDEFGOTO[NTERM-NUM].  */
 static const signed char yydefgoto[] =
 {
-      -1,     1,     2,     7,     8,     9,    10
+      -1,     1,     2,     9,    10,    15,    11,    12,    13
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -21
+#define YYPACT_NINF -16
 static const signed char yypact[] =
 {
-     -21,     3,   -11,   -21,   -21,    -4,   -21,   -21,    -6,    -5,
-      -3,   -20,   -21,   -21,   -21,    -4,   -21,   -21
+     -16,     1,    -6,   -16,   -15,   -16,    -4,   -16,   -16,   -16,
+      -9,     2,   -16,     3,   -16,     8,   -16,   -16,   -16,   -12,
+     -16,   -16,   -16,   -16,    -4,   -16,   -16
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const signed char yypgoto[] =
 {
-     -21,   -21,   -21,   -21,    -2,     1,   -21
+     -16,   -16,   -16,   -16,    -7,   -16,    -1,    16,    17
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -343,8 +347,9 @@ static const signed char yypgoto[] =
 #define YYTABLE_NINF -1
 static const unsigned char yytable[] =
 {
-       4,    15,     6,     3,    11,    12,    13,     0,    14,    16,
-       5,     6,    17
+       4,     3,    20,    16,    19,     5,    14,     7,     8,    24,
+       7,     8,    25,    21,    22,     6,     7,     8,    26,    23,
+      17,    18
 };
 
 /* YYCONFLP[YYPACT[STATE-NUM]] -- Pointer into YYCONFL of start of
@@ -353,29 +358,32 @@ static const unsigned char yytable[] =
    yyconfl is terminated by a rule number of 0.  */
 static const unsigned char yyconflp[] =
 {
-       0,     0,     0,     0,     0,     0,     1,     0,     0,     0,
-       0,     0,     0
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     1,     0,     0,     0,     0,     0,     0,
+       0,     0
 };
 
 /* YYCONFL[I] -- lists of conflicting rule numbers, each terminated by
    0, pointed into by YYCONFLP.  */
 static const short int yyconfl[] =
 {
-       0,    10,     0
+       0,    11,     0
 };
 
-static const signed char yycheck[] =
+static const unsigned char yycheck[] =
 {
-      11,    21,    22,     0,     8,    11,    11,    -1,    11,    11,
-      21,    22,    11
+       6,     0,    11,     4,     8,    11,    21,    22,    23,    21,
+      22,    23,    19,    11,    11,    21,    22,    23,    19,    11,
+       4,     4
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const unsigned char yystos[] =
 {
-       0,    25,    26,     0,    11,    21,    22,    27,    28,    29,
-      30,     8,    11,    11,    11,    21,    28,    29
+       0,    25,    26,     0,     6,    11,    21,    22,    23,    27,
+      28,    30,    31,    32,    21,    29,    30,    31,    32,     8,
+      11,    11,    11,    11,    21,    28,    30
 };
 
 
@@ -836,7 +844,7 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
 
   case 6:
 #line 75 "rules/rad.y"
-    {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.tnode);;}
+    {((*yyvalp).tnode) = new rd_tree_node(PUTS_STMT, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (3))].yystate.yysemantics.yysval.tnode));;}
     break;
 
   case 7:
@@ -850,32 +858,62 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
     break;
 
   case 9:
-#line 82 "rules/rad.y"
+#line 78 "rules/rad.y"
+    {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.tnode);;}
+    break;
+
+  case 10:
+#line 83 "rules/rad.y"
     {
           rd_tree_node *setlocal = new rd_tree_node(SET_LOCAL);
-          setlocal->cont = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.str);
+          setlocal->cont = new rd_value((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.str));
           ((*yyvalp).tnode) = new rd_tree_node(ASSIGN_EXPR, (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.tnode), setlocal);
         ;}
     break;
 
-  case 10:
-#line 87 "rules/rad.y"
+  case 11:
+#line 88 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
-  case 11:
-#line 91 "rules/rad.y"
-    {((*yyvalp).tnode) = new rd_tree_node(PUT_STR); ((*yyvalp).tnode)->cont = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.str);;}
+  case 12:
+#line 89 "rules/rad.y"
+    {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
-  case 12:
+  case 13:
+#line 93 "rules/rad.y"
+    {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
+    break;
+
+  case 14:
 #line 94 "rules/rad.y"
-    {((*yyvalp).tnode) = new rd_tree_node(GET_LOCAL); ((*yyvalp).tnode)->cont = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.str);;}
+    {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
+    break;
+
+  case 15:
+#line 95 "rules/rad.y"
+    {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
+    break;
+
+  case 16:
+#line 99 "rules/rad.y"
+    {((*yyvalp).tnode) = new rd_tree_node(PUT_STR); ((*yyvalp).tnode)->cont = new rd_value((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.str));;}
+    break;
+
+  case 17:
+#line 103 "rules/rad.y"
+    {((*yyvalp).tnode) = new rd_tree_node(PUT_OBJ); ((*yyvalp).tnode)->cont = new rd_value((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.num));;}
+    break;
+
+  case 18:
+#line 107 "rules/rad.y"
+    {((*yyvalp).tnode) = new rd_tree_node(GET_LOCAL); ((*yyvalp).tnode)->cont = new rd_value((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.str));;}
     break;
 
 
 /* Line 930 of glr.c.  */
-#line 879 "src/parser.cpp"
+#line 917 "src/parser.cpp"
       default: break;
     }
 
@@ -2532,7 +2570,7 @@ yypdumpstack (yyGLRStack* yystackp)
 #endif
 
 
-#line 96 "rules/rad.y"
+#line 109 "rules/rad.y"
 
 
 

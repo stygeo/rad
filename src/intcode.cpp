@@ -6,7 +6,8 @@
 void rd_int_instr::number(int ln)   {
   rd_int_instr *num = this;
   while(num != NULL)   {
-    num->n = ln++; num = num->next;
+    if(num->opcode != OP_NOP)
+      num->n = ln++; num = num->next;
   }
 }
 
@@ -18,16 +19,19 @@ int rd_int_instr::len() {
 
 // Names of the opcodes
 char *op_name[] = {
-  "OP_NOP", "OP_PUT_STR", "OP_SET_LOCAL",
-  "OP_GET_LOCAL"
+  "empty", "putstring", "putobject", "setlocal",
+  "getlocal", "puts",
 };
 
 // show this block of intermediate code
 void rd_int_instr::show()   {
-  printf("%2d: %s ", n, op_name[opcode]);
-  if(str)     printf("%s ", str);
-  if(target)  printf("%d", target->n);
-  printf("\n");
+  if(opcode != OP_NOP) {
+    printf("%4d: %s ", n, op_name[opcode]);
+    if(str)     printf("\t%s", str->to_s());
+    if(target)  printf("%d", target->n);
+    printf("\n");
+  }
+
   if(next != NULL)   next->show();
 }
 
@@ -60,9 +64,15 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
       return new rd_int_instr(OP_GET_LOCAL, root->cont);
     case PUT_STR:
       return new rd_int_instr(OP_PUT_STR, root->cont);
+    case PUT_OBJ:
+      return new rd_int_instr(OP_PUT_OBJ, root->cont);
     case ASSIGN_EXPR:
       blk1 = rd_mk_int_code(root->child[0]);
       blk2 = rd_mk_int_code(root->child[1]);
+      return concatenate(blk1, blk2);
+    case PUTS_STMT:
+      blk1 = rd_mk_int_code(root->child[0]);
+      blk2 = new rd_int_instr(OP_PUTS);
       return concatenate(blk1, blk2);
   }
   return new rd_int_instr(OP_NOP); // shouldn't happen

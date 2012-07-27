@@ -3,4 +3,4 @@ all:
 	export BISON_HAIRY=/user/bin/bison
 	lex -osrc/lex.cpp rules/rad.l
 	bison --defines --verbose -o src/parser.cpp rules/rad.y
-	c++ -std=c++11 -g -I. -Iheaders -DDEBUG src/*.cpp main.cpp -o rad
+	c++ -std=c++11 -g -I. -Wdeprecated-writable-strings -Iheaders -DDEBUG src/*.cpp main.cpp -o rad

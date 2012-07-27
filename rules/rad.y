@@ -8,6 +8,7 @@
 
 #include "lex.h"     // the lexer
 #include "treenode.h" // the syntax tree
+#include "value.h"
 
 extern SyntTree tree;
 
@@ -34,7 +35,7 @@ char *make_name();
 }
 
 /* Token definitions */
-%token ERROR_TOKEN IF ELSE PRINT INPUT ASSIGN EQUAL
+%token ERROR_TOKEN IF ELSE PUTS INPUT ASSIGN EQUAL
 %token CONCAT END_STMT OPEN_PAR CLOSE_PAR
 %token BEGIN_CS END_CS DEF THEN END COMMA RETURN
 %token <str> ID STRING
@@ -48,11 +49,10 @@ char *make_name();
 %type <tnode>  identifier string*/
 
 %type <tnode>  program statement_list statement
-%type <tnode>  assign_expression
-%type <tnode>  getlocal putstring
+%type <tnode>  assign_expression simple_expression
+%type <tnode>  getlocal putstring putobject
 
-%expect 1 /* shift/reduce conflict: dangling ELSE */
-          /* declaration */
+%expect 1
 %expect-rr 0
 
 %%
@@ -72,6 +72,7 @@ statement_list
 
 statement
       : END_STMT                    {$$ = new rd_tree_node(EMPTY_STMT);}
+      | PUTS simple_expression END_STMT   {$$ = new rd_tree_node(PUTS_STMT, $2);}
       | assign_expression END_STMT  {$$ = $1;}
       | getlocal END_STMT           {$$ = $1;}
       | putstring END_STMT          {$$ = $1;}
@@ -81,17 +82,29 @@ assign_expression
       : ID ASSIGN assign_expression
         {
           rd_tree_node *setlocal = new rd_tree_node(SET_LOCAL);
-          setlocal->cont = $1;
+          setlocal->cont = new rd_value($1);
           $$ = new rd_tree_node(ASSIGN_EXPR, $3, setlocal);
         }
       | putstring                         {$$ = $1;}
-      /*| putobject                       {$$ = $1;}*/
+      | putobject                         {$$ = $1;}
       ;
+
+simple_expression
+      : getlocal    {$$ = $1;}
+      | putobject   {$$ = $1;}
+      | putstring   {$$ = $1;}
+      ;
+
 putstring
-      : STRING      {$$ = new rd_tree_node(PUT_STR); $$->cont = $1;}
+      : STRING      {$$ = new rd_tree_node(PUT_STR); $$->cont = new rd_value($1);}
       ;
+
+putobject
+      : NUMBER      {$$ = new rd_tree_node(PUT_OBJ); $$->cont = new rd_value($1);}
+      ;
+
 getlocal
-      : ID          {$$ = new rd_tree_node(GET_LOCAL); $$->cont = $1;}
+      : ID          {$$ = new rd_tree_node(GET_LOCAL); $$->cont = new rd_value($1);}
       ;
 %%
 

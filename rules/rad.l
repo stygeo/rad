@@ -40,7 +40,7 @@ WSPACE   [ \t]+
 
 "if"      {return IF;}
 "else"    {return ELSE;}
-"print"   {return PRINT;}
+"puts"    {return PUTS;}
 "input"   {return INPUT;}
 "def"     {return DEF;}
 "return"  {return RETURN;}

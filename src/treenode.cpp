@@ -11,6 +11,8 @@ char *name[] = {
   "setlocal",
   "getlocal",
   "putstring",
+  "puts",
+  "putobject",
 };
 
 // Numbers of children per node type
@@ -26,10 +28,10 @@ void rd_tree_node::show(int level)   {
     printf("%s", name[type]);
     switch(type)  {
       case SET_LOCAL: case GET_LOCAL:
-        printf("\t%s", cont);
+        printf("\t%s", cont->to_s());
         break;
-      case PUT_STR:
-        printf("\t\"%s\"", cont);
+      case PUT_STR: case PUT_OBJ:
+        printf("\t\"%s\"", cont->to_s());
         break;
     }
     nl = level + 1;

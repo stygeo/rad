@@ -5,6 +5,7 @@
 #include "parse.h"
 #include "treenode.h"
 #include "intcode.h"
+#include "vm.h"
 
 int errors = 0;
 void error(char *format, ...) {
@@ -46,14 +47,15 @@ int main(int argc, char *argv[]) {
   yyparse();
   error_summary();
 
-#ifdef DEBUG
-  tree->show();
-#endif
   intcode = rd_mk_int_code(tree);
   intcode->number(1);
 #ifdef DEBUG
   intcode->show();
 #endif
+
+  rd_vm vm;
+  vm.compile();
+  vm.execute();
 
   return 0;
 }
