@@ -41,15 +41,9 @@ char *make_name();
 %token <str> ID STRING
 %token <num> NUMBER
 
-/* Rule type definitions */
-/*%type <tnode>  program statement_list statement function_definition
-%type <tnode>  if_statement optional_else_statement compound_statement
-%type <tnode>  expression equal_expression assign_expression function_call
-%type <tnode>  concat_expression simple_expression args
-%type <tnode>  identifier string*/
-
-%type <tnode>  program statement_list statement
-%type <tnode>  assign_expression simple_expression
+%type <tnode>  program statement_list statement expression compound_statement
+%type <tnode>  equal_expression assign_expression simple_expression
+%type <tnode>  if_statement block_start head_expr
 %type <tnode>  getlocal putstring putobject
 
 %expect 1
@@ -72,10 +66,38 @@ statement_list
 
 statement
       : END_STMT                    {$$ = new rd_tree_node(EMPTY_STMT);}
-      | PUTS simple_expression END_STMT   {$$ = new rd_tree_node(PUTS_STMT, $2);}
-      | assign_expression END_STMT  {$$ = $1;}
-      | getlocal END_STMT           {$$ = $1;}
-      | putstring END_STMT          {$$ = $1;}
+      | head_expr if_statement      {$$ = new rd_tree_node(BLOCK_STMT, $2, $1);}
+      | head_expr END_STMT          {$$ = $1;}
+      | compound_statement          {$$ = $1;}
+      ;
+
+head_expr
+      : expression                  {$$ = $1;}
+      | PUTS expression             {$$ = new rd_tree_node(PUTS_STMT, $2);}
+      ;
+
+block_start
+      : if_statement                {$$ = $1;}
+      ;
+
+if_statement
+      : IF expression
+        {
+          $$ = new rd_tree_node(IFTHEN_STMT, $2);
+        }
+      ;
+
+compound_statement
+      : block_start statement_list END_CS {$$ = new rd_tree_node(BLOCK_STMT, $1, $2);}
+      ;
+
+expression
+      : equal_expression            {$$ = $1;}
+      ;
+
+equal_expression
+      : expression EQUAL expression {$$ = new rd_tree_node(EQUAL_EXPR, $1, $3);}
+      | assign_expression           {$$ = $1;}
       ;
 
 assign_expression
@@ -85,8 +107,7 @@ assign_expression
           setlocal->cont = new rd_value($1);
           $$ = new rd_tree_node(ASSIGN_EXPR, $3, setlocal);
         }
-      | putstring                         {$$ = $1;}
-      | putobject                         {$$ = $1;}
+      | simple_expression           {$$ = $1;}
       ;
 
 simple_expression

@@ -24,54 +24,34 @@ class rd_value {
     rd_value(float _f)                    {f = _f; type = rd_VAL_DEC;}
     rd_value(bool  _b)                    {b = _b; type = rd_VAL_BOOL;}
 
-    char *sval()  {return s;}   // Return string value
-    int   ival()  {return i;}   // Return number value
-    bool  bval()  {return b;}   // Return boolean value
-    float fval()  {return f;}   // Return float value
+    char *sval() const  {return s;}   // Return string value
+    int   ival() const  {return i;}   // Return number value
+    bool  bval() const  {return b;}   // Return boolean value
+    float fval() const  {return f;}   // Return float value
     void  assign(char *_s)   {int l; delete[] s; l = strlen(_s); s = new char[l+1]; strcpy(s, _s);type = rd_VAL_STR;}
     void  assign(int   _i)   {i = _i;type = rd_VAL_NUM;}
     void  assign(bool  _b)   {b = _b;type = rd_VAL_BOOL;}
     void  assign(float _f)   {f = _f;type = rd_VAL_DEC;}
+    int   len() const        {return strlen(s);}
 
-    //friend std::ostream& operator<<(std::ostream& os, rd_value& _val) {
-    //  os << _val.sval(); return os;
+    rd_val_type kind_of() const {return type;}
+
+    bool eq(const rd_value *rval) const;
+    // Somehow overloaded operators don't work ...
+    bool operator==(const rd_value &rval) const;
+    bool operator!=(const rd_value &rval) const;
+    friend std::ostream& operator<<(std::ostream& os, const rd_value& _val);
+
+    const char *to_s() const;
+
+    //void concat(rd_value *n)   {
+    //  rd_value str_val = to_s();
+
+    //  int nl = len() + n->len();
+    //  char *ns = new char [nl + 1];
+    //  strcpy(ns, s); strcat(ns, n->to_s());
+    //  delete[] s; s = ns;
     //}
-
-    int   len()              {return strlen(s);}
-
-    rd_val_type kind_of() {return type;}
-
-    char *to_s() {
-      std::stringstream buff;
-
-      switch(type) {
-        case rd_NIL:
-          buff << "nil";
-          break;
-        case rd_VAL_BOOL:
-          buff << (b ? "true" : "false");
-          break;
-        case rd_VAL_NUM:
-          buff << i;
-          break;
-        case rd_VAL_DEC:
-          buff << f;
-          break;
-        default:
-          buff << sval();
-          break;
-      }
-      return (char*)buff.str().c_str();
-    }
-
-    void concat(rd_value *n)   {
-      rd_value str_val = to_s();
-
-      int nl = len() + n->len();
-      char *ns = new char [nl + 1];
-      strcpy(ns, s); strcat(ns, n->to_s());
-      delete[] s; s = ns;
-    }
 
   private:
     char *s;    // String value

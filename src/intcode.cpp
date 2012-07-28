@@ -6,8 +6,7 @@
 void rd_int_instr::number(int ln)   {
   rd_int_instr *num = this;
   while(num != NULL)   {
-    if(num->opcode != OP_NOP)
-      num->n = ln++; num = num->next;
+    num->n = ln++; num = num->next;
   }
 }
 
@@ -19,18 +18,19 @@ int rd_int_instr::len() {
 
 // Names of the opcodes
 char *op_name[] = {
-  "empty", "putstring", "putobject", "setlocal",
-  "getlocal", "puts",
+  "nil", "putstring", "putobject", "setlocal",
+  "getlocal", "puts", "opt_eq", "jumpunless",
+
+  "jumptarget",
 };
 
 // show this block of intermediate code
 void rd_int_instr::show()   {
-  if(opcode != OP_NOP) {
-    printf("%4d: %s ", n, op_name[opcode]);
-    if(str)     printf("\t%s", str->to_s());
-    if(target)  printf("%d", target->n);
-    printf("\n");
-  }
+  printf("| %04d | %-20s |", n, op_name[opcode]);
+  if(str)     printf("(S) %-30s |", str->to_s());
+  if(target)  printf("(T) %-30d |", target->n);
+  if(!str && !target) printf("%-34s |", "");
+  printf("\n");
 
   if(next != NULL)   next->show();
 }
@@ -56,6 +56,12 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
       blk2 = rd_mk_int_code(root->child[1]);
       concatenate(blk1, blk2);
       return blk1;
+    case BLOCK_STMT:
+      // Assemble a new chain. Not possible thru lex
+      // child[0]->child[1] = if statement
+      // child[1] = statement_list
+      root->child[0]->child[1] = root->child[1];
+      return rd_mk_int_code(root->child[0]);
     case EMPTY_STMT:
       return new rd_int_instr(OP_NOP);
     case SET_LOCAL:
@@ -74,6 +80,24 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
       blk1 = rd_mk_int_code(root->child[0]);
       blk2 = new rd_int_instr(OP_PUTS);
       return concatenate(blk1, blk2);
+    case EQUAL_EXPR:
+      blk1 = rd_mk_int_code(root->child[0]);
+      blk2 = rd_mk_int_code(root->child[1]);
+      concatenate(blk1, blk2);
+
+      return concatenate(blk1, new rd_int_instr(OP_EQUAL));
+    case IFTHEN_STMT:
+      cond     = rd_mk_int_code(root->child[0]);
+      jump2end = new rd_int_instr(OP_JMPF);
+      thenpart = rd_mk_int_code(root->child[1]);
+      endif    = new rd_int_instr(JUMPTARGET, jump2end);
+      jump2end->target = endif;
+
+      concatenate(cond, jump2end);
+      concatenate(jump2end, thenpart);
+      concatenate(thenpart, endif);
+
+      return cond;
   }
   return new rd_int_instr(OP_NOP); // shouldn't happen
 }

@@ -13,6 +13,9 @@ char *name[] = {
   "putstring",
   "puts",
   "putobject",
+  "ifthen",
+  "equal",
+  "block",
 };
 
 // Numbers of children per node type

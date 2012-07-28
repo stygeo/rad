@@ -44,7 +44,6 @@ WSPACE   [ \t]+
 "input"   {return INPUT;}
 "def"     {return DEF;}
 "return"  {return RETURN;}
-"then"    {return BEGIN_CS;}
 "end"     {return END_CS;}
 "="       {return ASSIGN;}
 "=="      {return EQUAL;}

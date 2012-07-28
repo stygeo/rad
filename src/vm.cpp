@@ -24,6 +24,10 @@ rd_instr *rd_mk_instr(rd_opcode opcode, rd_value *val) {
   return new rd_instr(opcode, val);
 }
 
+rd_instr *rd_mk_instr(rd_opcode opcode, int target) {
+  return new rd_instr(opcode, target);
+}
+
 void rd_vm::compile() {
   int ninstr = intcode->len();
   rd_int_instr *cinstr = intcode;
@@ -50,6 +54,15 @@ void rd_vm::compile() {
       case OP_PUTS:
         instr = rd_mk_instr(OP_PUTS);
         break;
+      case OP_EQUAL:
+        instr = rd_mk_instr(OP_EQUAL);
+        break;
+      case OP_JMPF:
+        instr = rd_mk_instr(OP_JMPF, cinstr->target->n);
+        break;
+      case JUMPTARGET:
+        instr = rd_mk_instr(OP_NOP, cinstr->n);
+        break;
       default:
         instr = rd_mk_instr(OP_NOP);
         break;
@@ -60,61 +73,96 @@ void rd_vm::compile() {
   }
 }
 
+void rd_vm::stat() {
+  puts("+-----------------------------------------------------------------+");
+  puts("|                    Rad VM Stats                                 |");
+  printf("| instr. %-56d |\n", instrs.size());
+  puts("+------+----------------------+-----------------------------------+");
+  puts("| #    | Instruction          | Value (opt)                       |");
+  puts("+------+----------------------+-----------------------------------+");
+  intcode->show();
+  puts("+------+----------------------+-----------------------------------+");
+}
+
 void rd_vm::execute() {
   rd_value *pval;
+  int ip = 0; // Instruction pointer reset = 0
+  int cip = 0;
 
   for(auto instr : instrs) {
-    switch(instr->opcode) {
-      case OP_PUT_STR: case OP_PUT_OBJ:
-        // Push value on stack
-        stack.push(instr->val);
-        break;
-      case OP_SET_LOCAL:
-      {
-        // Find variable
-        rd_sym_desc *t = sym_tab->find(instr->val->to_s());
-        // Pop stack
-        pval = stack.pop();
+    //printf("ip: %d. target: %d\n", ip, instr->target);
+    if((ip != 0 && ip == instr->target) || ip == 0) {
+      ip = 0; // Reset instruction pointer = 0
 
-        if(t == NULL) {
-          // Undefined variable, create new
-          t = new rd_sym_desc(instr->val->to_s(), STR_VAR, pval, 0);
-          // Add it to the symbol table
-          sym_tab->add(t);
-        } else {
-          // Defined variable, set new value
-          t->val = pval;
+      switch(instr->opcode) {
+        case OP_PUT_STR: case OP_PUT_OBJ:
+          // Push value on stack
+          stack.push(instr->val);
+          break;
+        case OP_SET_LOCAL:
+        {
+          // Find variable
+          rd_sym_desc *sd = sym_tab->find(instr->val->sval());
+          // Pop stack
+          pval = stack.pop();
+
+          if(sd == NULL) {
+            // Undefined variable, create new
+            sd = new rd_sym_desc(instr->val->sval(), pval, 0);
+            // Add it to the symbol table
+            sym_tab->add(sd);
+          } else {
+            // Defined variable, set new value
+            sd->val = pval;
+          }
+
+          break;
         }
+        case OP_GET_LOCAL:
+        {
+          // Find variable
+          rd_sym_desc *t = sym_tab->find(instr->val->sval());
+          rd_value *val;
 
-        break;
-      }
-      case OP_GET_LOCAL:
-      {
-        // Find variable
-        rd_sym_desc *t = sym_tab->find(instr->val->to_s());
-        rd_value *val;
+          if(t == NULL) {
+            printf("Undefined variable or method: `%s'\n", instr->val->sval());
+            val = nil;
+          } else {
+            val = t->val;
+          }
 
-        if(t == NULL) {
-          printf("Undefined variable or method: `%s'", instr->val->to_s());
-          val = nil;
-        } else {
-          val = t->val;
+          stack.push(val);
+
+          break;
         }
+        case OP_PUTS:
+        {
+          pval = stack.pop();
+          std::cout << pval->to_s() << std::endl;
+          break;
+        }
+        case OP_EQUAL:
+        {
+          rd_value *lval, *rval;
 
-        stack.push(val);
+          lval = stack.pop(); rval = stack.pop();
+          //std::cout << "lval: " << lval->to_s() << " rval " << rval->to_s() << std::endl;
+          stack.push(new rd_value(lval->eq(rval)));
 
-        break;
+          break;
+        }
+        case OP_JMPF:
+        {
+          pval = stack.pop();
+          if(!pval->bval()) {
+            //printf("I need to jump to: %d\n", instr->target);
+            ip = instr->target;
+          }
+          break;
+        }
       }
-      case OP_PUTS:
-      {
-        pval = stack.pop();
-        std::cout << pval->to_s() << std::endl;
-        break;
-      }
-      default:
-        break;
+      pval = NULL;
+      cip++;
     }
-    pval = NULL;
   }
-  sym_tab->show();
 }

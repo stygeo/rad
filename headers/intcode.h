@@ -3,15 +3,17 @@
 #include "treenode.h"
 
 enum rd_opcode  {
-   OP_NOP,           // no operation
-   OP_PUT_STR,       // put string
-   OP_PUT_OBJ,       // put object
-   OP_SET_LOCAL,     // set variable to top of stack
-   OP_GET_LOCAL,     // get variable
-   OP_PUTS,
-   OP_JMPF,
+  OP_NOP,           // no operation
+  OP_PUT_STR,       // put string
+  OP_PUT_OBJ,       // put object
+  OP_SET_LOCAL,     // set variable to top of stack
+  OP_GET_LOCAL,     // get variable
+  OP_PUTS,
+  OP_EQUAL,
+  OP_JMPF,
 
-   JUMPTARGET,
+
+  JUMPTARGET,
 };
 
 // Intermediate code instruction

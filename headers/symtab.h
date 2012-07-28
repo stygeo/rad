@@ -11,14 +11,14 @@ enum rd_sym_type   {
 
 class rd_sym_desc {
   public:
-    rd_sym_desc (char *_name, rd_sym_type _type, rd_value *_val, int _line);
+    rd_sym_desc (const char *_name, rd_value *_val, int _line);
     ~rd_sym_desc ();
     void show ();
     void set_no(int n) {no=n;}
     int  get_no() {return no;}
     int no;
 
-    char         *name;  // name of the symbol
+    const char   *name;  // name of the symbol
     rd_value     *val;
     rd_sym_type  type;   // type of the symbol
     int          line;   // line it was first encountered
@@ -30,7 +30,7 @@ class rd_sym_tab  {
     rd_sym_tab();
     ~rd_sym_tab();
     bool add (rd_sym_desc *symb);
-    rd_sym_desc *find(char *name);
+    rd_sym_desc *find(const char *name);
     void show ();
     rd_sym_desc *get_first()   { current = start; return current; }
     rd_sym_desc *get_next() {

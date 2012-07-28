@@ -14,8 +14,11 @@ struct rd_instr {
   rd_instr(rd_opcode _opcode) { opcode = _opcode; val = nil; }
   rd_instr(rd_opcode _opcode, rd_value *_val) { opcode = _opcode; val = _val; }
 
+  rd_instr(rd_opcode _opcode, int _target) { opcode = _opcode; target = _target; }
+
   rd_opcode   opcode;
-  rd_value *val;
+  int         target;
+  rd_value    *val;
 };
 
 typedef rd_stack<rd_value*> vm_stack;
@@ -27,6 +30,7 @@ class rd_vm {
     void compile();
     void execute();
     void reset();
+    void stat();
   private:
     std::vector<rd_instr*> instrs;
     vm_stack stack;

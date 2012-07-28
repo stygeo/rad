@@ -47,15 +47,23 @@ int main(int argc, char *argv[]) {
   yyparse();
   error_summary();
 
-  intcode = rd_mk_int_code(tree);
-  intcode->number(1);
-#ifdef DEBUG
-  intcode->show();
+#ifdef SYN_TREE
+  tree->show();
 #endif
 
-  rd_vm vm;
-  vm.compile();
-  vm.execute();
+  if(!errors) {
+    intcode = rd_mk_int_code(tree);
+    intcode->number(1);
 
-  return 0;
+    rd_vm vm;
+    vm.compile();
+#ifdef DEBUG
+    vm.stat();
+#endif
+    vm.execute();
+
+    return 0;
+  }
+
+  return 1;
 }

@@ -24,6 +24,18 @@ class rd_stack {
     void do_for_all_arg(void(*process)(t,void*), void *arg);
     inline int len()          { return n; }
     inline bool is_empty()    { return n == 0; }
+    inline void show() {
+      ll_link<t> *start;
+      start = llstart;
+      puts("+-----------------------------+");
+      puts("| Stack                       |");
+      puts("+-----------------------------+");
+      while(start != NULL) {
+        printf("| %-27s |\n", start->data->to_s());
+        start = start->next;
+      }
+      puts("+-----------------------------+");
+    }
   private:
     ll_link<t> *llstart;      // Start list< last in >
     int n;                    // Number of links
