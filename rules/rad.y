@@ -43,7 +43,7 @@ char *make_name();
 
 %type <tnode>  program statement_list statement expression compound_statement
 %type <tnode>  equal_expression assign_expression simple_expression
-%type <tnode>  if_statement block_start head_expr
+%type <tnode>  if_statement block_start head_expr optional_else_statement
 %type <tnode>  getlocal putstring putobject
 
 %expect 1
@@ -86,10 +86,26 @@ if_statement
           $$ = new rd_tree_node(IFTHEN_STMT, $2);
         }
       ;
-
 compound_statement
-      : block_start statement_list END_CS {$$ = new rd_tree_node(BLOCK_STMT, $1, $2);}
+      : IF expression statement_list optional_else_statement END_CS
+        {
+          if($4 != NULL)
+            $$ = new rd_tree_node(IFTHENELSE_STMT, $2, $3, $4);
+          else
+            $$ = new rd_tree_node(IFTHEN_STMT, $2, $3);
+        }
+      | BEGIN_CS statement_list END_CS {$$ = $2;}
       ;
+
+optional_else_statement
+      : ELSE statement_list    {$$ = $2;}
+      | /* empty */            {$$ = NULL;}
+      ;
+/*compound_statement
+      : block_start statement_list END_CS {$$ = new rd_tree_node(BLOCK_STMT, $1, $2);}
+      | BEGIN_CS statement_list END_CS {$$ = $2;}
+      ;
+*/
 
 expression
       : equal_expression            {$$ = $1;}

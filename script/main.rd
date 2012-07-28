@@ -3,7 +3,6 @@ b = 1
 c = "3"
 
 if a == b
-  puts "test"
   puts "hello a == b" if a == b
   puts "hello c == b" if a == c
 
@@ -18,5 +17,10 @@ if a == b
     puts "it should come here"
     puts "Well hello thar"
   end
-end
 
+  if test1 == test2
+    puts "Yes"
+  else
+    puts "Nope"
+  end
+end

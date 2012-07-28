@@ -14,6 +14,7 @@ char *name[] = {
   "puts",
   "putobject",
   "ifthen",
+  "ifthenelse",
   "equal",
   "block",
 };

@@ -57,6 +57,9 @@ void rd_vm::compile() {
       case OP_EQUAL:
         instr = rd_mk_instr(OP_EQUAL);
         break;
+      case OP_JMP:
+        instr = rd_mk_instr(OP_JMP, cinstr->target->n);
+        break;
       case OP_JMPF:
         instr = rd_mk_instr(OP_JMPF, cinstr->target->n);
         break;
@@ -149,6 +152,11 @@ void rd_vm::execute() {
           //std::cout << "lval: " << lval->to_s() << " rval " << rval->to_s() << std::endl;
           stack.push(new rd_value(lval->eq(rval)));
 
+          break;
+        }
+        case OP_JMP:
+        {
+          ip = instr->target;
           break;
         }
         case OP_JMPF:

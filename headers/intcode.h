@@ -11,6 +11,7 @@ enum rd_opcode  {
   OP_PUTS,
   OP_EQUAL,
   OP_JMPF,
+  OP_JMP,
 
 
   JUMPTARGET,

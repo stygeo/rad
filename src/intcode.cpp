@@ -20,6 +20,7 @@ int rd_int_instr::len() {
 char *op_name[] = {
   "nil", "putstring", "putobject", "setlocal",
   "getlocal", "puts", "opt_eq", "jumpunless",
+  "jump",
 
   "jumptarget",
 };
@@ -42,6 +43,17 @@ rd_int_instr *concatenate(rd_int_instr *blk1, rd_int_instr *blk2)  {
   search->next = blk2;
   return blk1;
 }
+
+// Prefix a jump target to a block; returns the new block
+rd_int_instr *prefix_jt(rd_int_instr *blk, rd_int_instr *ref_instr)   {
+   rd_int_instr *jt = new rd_int_instr;
+   jt->opcode = JUMPTARGET;
+   jt->target = ref_instr;   // the referring instruction
+   jt->next = blk;
+
+   return jt;
+}
+
 
 // Recursively generate intermediate code
 rd_int_instr *rd_mk_int_code(SyntTree tree)  {
@@ -98,6 +110,25 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
       concatenate(thenpart, endif);
 
       return cond;
+    case IFTHENELSE_STMT:
+      // First, create the necessary code parts
+      cond      = rd_mk_int_code(root->child[0]);
+      jump2else = new rd_int_instr(OP_JMPF);      // set target below
+      thenpart  = rd_mk_int_code(root->child[1]);
+      elsepart  = prefix_jt(rd_mk_int_code(root->child[2]), jump2else);
+      jump2else->target = elsepart;
+      jump2end  = new rd_int_instr(OP_JMP);       // set target below
+      endif     = new rd_int_instr(JUMPTARGET, jump2end);
+      jump2end->target = endif;
+
+      // Now, concatenate them all
+      concatenate(cond, jump2else);
+      concatenate(jump2else, thenpart);
+      concatenate(thenpart, jump2end);
+      concatenate(jump2end, elsepart);
+      concatenate(elsepart, endif);
+      return cond;
+
   }
   return new rd_int_instr(OP_NOP); // shouldn't happen
 }

@@ -14,6 +14,7 @@ enum rd_node_type {
   PUTS_STMT,
   PUT_OBJ,
   IFTHEN_STMT,
+  IFTHENELSE_STMT,
   EQUAL_EXPR,
   BLOCK_STMT,
 };
