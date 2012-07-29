@@ -56,9 +56,10 @@
      END = 273,
      COMMA = 274,
      RETURN = 275,
-     ID = 276,
-     STRING = 277,
-     NUMBER = 278
+     WHILE = 276,
+     ID = 277,
+     STRING = 278,
+     NUMBER = 279
    };
 #endif
 
@@ -98,7 +99,7 @@ typedef union YYSTYPE
   rd_tree_node *tnode;   // node in the syntax tree
 }
 /* Line 2616 of glr.c.  */
-#line 102 "src/parser.hpp"
+#line 103 "src/parser.hpp"
 	YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

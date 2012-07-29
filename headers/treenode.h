@@ -17,6 +17,7 @@ enum rd_node_type {
   IFTHENELSE_STMT,
   EQUAL_EXPR,
   BLOCK_STMT,
+  WHILE_STMT,
 };
 
 enum rd_data_type {

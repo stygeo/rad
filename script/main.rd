@@ -24,3 +24,8 @@ if a == b
     puts "Nope"
   end
 end
+
+while a == 1
+  puts "in while loop. Setting a to 2"
+  a = 2
+end

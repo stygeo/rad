@@ -45,6 +45,7 @@ WSPACE   [ \t]+
 "def"     {return DEF;}
 "return"  {return RETURN;}
 "end"     {return END_CS;}
+"while"   {return WHILE;}
 "="       {return ASSIGN;}
 "=="      {return EQUAL;}
 "+"       {return CONCAT;}

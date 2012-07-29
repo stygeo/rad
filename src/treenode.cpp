@@ -17,6 +17,7 @@ char *name[] = {
   "ifthenelse",
   "equal",
   "block",
+  "while",
 };
 
 // Numbers of children per node type

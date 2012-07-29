@@ -38,6 +38,7 @@ char *make_name();
 %token ERROR_TOKEN IF ELSE PUTS INPUT ASSIGN EQUAL
 %token CONCAT END_STMT OPEN_PAR CLOSE_PAR
 %token BEGIN_CS END_CS DEF THEN END COMMA RETURN
+%token WHILE
 %token <str> ID STRING
 %token <num> NUMBER
 
@@ -94,6 +95,7 @@ compound_statement
           else
             $$ = new rd_tree_node(IFTHEN_STMT, $2, $3);
         }
+      | WHILE expression statement_list END_CS      {$$ = new rd_tree_node(WHILE_STMT, $2, $3);}
       | BEGIN_CS statement_list END_CS {$$ = $2;}
       ;
 

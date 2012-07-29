@@ -20,7 +20,7 @@ int rd_int_instr::len() {
 char *op_name[] = {
   "nil", "putstring", "putobject", "setlocal",
   "getlocal", "puts", "opt_eq", "jumpunless",
-  "jump",
+  "jumpif", "jump",
 
   "jumptarget",
 };
@@ -60,7 +60,8 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
   rd_tree_node *root = tree;
   rd_int_instr *blk1, *blk2,
                *cond, *jump2else, *thenpart, *jump2end, *elsepart, *endif,
-               *jump2callee, *endfunc, *jump_return, *return_target;
+               *jump2callee, *endfunc, *jump_return, *return_target, *end,
+               *begin, *jump2begin;
 
   switch(root->type)  {
     case STMT_LIST:
@@ -128,7 +129,28 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
       concatenate(jump2end, elsepart);
       concatenate(elsepart, endif);
       return cond;
+    case WHILE_STMT:
+      // Jump to if statement
+      jump2end   = new rd_int_instr(OP_JMP);
+      end        = new rd_int_instr(JUMPTARGET, jump2end);
+      jump2end->target = end;
 
+      // Jump back if true
+      jump2begin = new rd_int_instr(OP_JMPT);
+      begin      = new rd_int_instr(JUMPTARGET, jump2begin);
+      jump2begin->target = begin;
+
+      // Conditions and statement list
+      cond       = rd_mk_int_code(root->child[0]);
+      thenpart   = rd_mk_int_code(root->child[1]);
+
+      concatenate(jump2end, begin); // JUMP, TARGET
+      concatenate(begin, thenpart); // TARGET, STMT LIST
+      concatenate(thenpart, end);   // STMT LIST, TARGET
+      concatenate(end, cond);       // TARGET, CONDITIONS
+      concatenate(cond, jump2begin);// CONDITIONS, IF STMT
+
+      return jump2end;
   }
   return new rd_int_instr(OP_NOP); // shouldn't happen
 }
