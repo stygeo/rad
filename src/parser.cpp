@@ -266,9 +266,9 @@ static const signed char yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned char yyrline[] =
 {
-       0,    62,    62,    66,    67,    71,    72,    73,    74,    75,
-      79,    82,    83,    91,    97,   104,   105,   109,   110,   119,
-     123,   124,   128,   134,   138,   139,   140,   144,   148,   152
+       0,    61,    61,    65,    66,    70,    71,    72,    73,    74,
+      78,    81,    82,    90,    96,   103,   104,   108,   109,   118,
+     122,   123,   127,   133,   137,   138,   139,   143,   147,   151
 };
 #endif
 
@@ -865,69 +865,69 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
   switch (yyn)
     {
         case 2:
-#line 62 "rules/rad.y"
+#line 61 "rules/rad.y"
     {tree = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 3:
-#line 66 "rules/rad.y"
+#line 65 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(STMT_LIST, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.tnode), (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.tnode));;}
     break;
 
   case 4:
-#line 67 "rules/rad.y"
+#line 66 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(EMPTY_STMT);;}
     break;
 
   case 5:
-#line 71 "rules/rad.y"
+#line 70 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(EMPTY_STMT);;}
     break;
 
   case 6:
-#line 72 "rules/rad.y"
+#line 71 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(BLOCK_STMT, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.tnode), (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.tnode));;}
     break;
 
   case 7:
-#line 73 "rules/rad.y"
+#line 72 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (2))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 8:
-#line 74 "rules/rad.y"
+#line 73 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 9:
-#line 75 "rules/rad.y"
+#line 74 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 10:
-#line 79 "rules/rad.y"
+#line 78 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(GET_CONST); ((*yyvalp).tnode)->constant = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.str);;}
     break;
 
   case 11:
-#line 82 "rules/rad.y"
+#line 81 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 12:
-#line 83 "rules/rad.y"
+#line 82 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(PUTS_STMT, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.tnode));;}
     break;
 
   case 13:
-#line 92 "rules/rad.y"
+#line 91 "rules/rad.y"
     {
           ((*yyvalp).tnode) = new rd_tree_node(IFTHEN_STMT, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.tnode));
         ;}
     break;
 
   case 14:
-#line 98 "rules/rad.y"
+#line 97 "rules/rad.y"
     {
           if((((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.tnode) != NULL)
             ((*yyvalp).tnode) = new rd_tree_node(IFTHENELSE_STMT, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (5))].yystate.yysemantics.yysval.tnode), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (5))].yystate.yysemantics.yysval.tnode), (((yyGLRStackItem const *)yyvsp)[YYFILL ((4) - (5))].yystate.yysemantics.yysval.tnode));
@@ -937,42 +937,42 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
     break;
 
   case 15:
-#line 104 "rules/rad.y"
+#line 103 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(WHILE_STMT, (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (4))].yystate.yysemantics.yysval.tnode), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (4))].yystate.yysemantics.yysval.tnode));;}
     break;
 
   case 16:
-#line 105 "rules/rad.y"
+#line 104 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (3))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 17:
-#line 109 "rules/rad.y"
+#line 108 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((2) - (2))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 18:
-#line 110 "rules/rad.y"
+#line 109 "rules/rad.y"
     {((*yyvalp).tnode) = NULL;;}
     break;
 
   case 19:
-#line 119 "rules/rad.y"
+#line 118 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 20:
-#line 123 "rules/rad.y"
+#line 122 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(EQUAL_EXPR, (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.tnode), (((yyGLRStackItem const *)yyvsp)[YYFILL ((3) - (3))].yystate.yysemantics.yysval.tnode));;}
     break;
 
   case 21:
-#line 124 "rules/rad.y"
+#line 123 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 22:
-#line 129 "rules/rad.y"
+#line 128 "rules/rad.y"
     {
           rd_tree_node *setlocal = new rd_tree_node(SET_LOCAL);
           setlocal->constant = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (3))].yystate.yysemantics.yysval.str);
@@ -981,37 +981,37 @@ yyuserAction (yyRuleNum yyn, int yyrhslen, yyGLRStackItem* yyvsp,
     break;
 
   case 23:
-#line 134 "rules/rad.y"
+#line 133 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 24:
-#line 138 "rules/rad.y"
+#line 137 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 25:
-#line 139 "rules/rad.y"
+#line 138 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 26:
-#line 140 "rules/rad.y"
+#line 139 "rules/rad.y"
     {((*yyvalp).tnode) = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.tnode);;}
     break;
 
   case 27:
-#line 144 "rules/rad.y"
+#line 143 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(PUT_STR); ((*yyvalp).tnode)->obj = rd_new_string((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.str));;}
     break;
 
   case 28:
-#line 148 "rules/rad.y"
+#line 147 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(PUT_OBJ); ((*yyvalp).tnode)->obj = rd_new_number((((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.num));;}
     break;
 
   case 29:
-#line 152 "rules/rad.y"
+#line 151 "rules/rad.y"
     {((*yyvalp).tnode) = new rd_tree_node(GET_LOCAL); ((*yyvalp).tnode)->constant = (((yyGLRStackItem const *)yyvsp)[YYFILL ((1) - (1))].yystate.yysemantics.yysval.str);;}
     break;
 
@@ -2674,7 +2674,7 @@ yypdumpstack (yyGLRStack* yystackp)
 #endif
 
 
-#line 154 "rules/rad.y"
+#line 153 "rules/rad.y"
 
 
 

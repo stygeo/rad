@@ -1,4 +1,4 @@
-a = 3
+a = "hello"
 puts a
 
 b = 1

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "treenode.h"
-#include "value.h"
 
 void error(char *format, ...);
 
@@ -36,10 +35,10 @@ void rd_tree_node::show(int level)   {
     printf("%s", name[type]);
     switch(type)  {
       case SET_LOCAL: case GET_LOCAL:
-        printf("\t%s", cont->to_s());
+        //printf("\t%s", cont->to_s());
         break;
       case PUT_STR: case PUT_OBJ:
-        printf("\t\"%s\"", cont->to_s());
+        //printf("\t\"%s\"", cont->to_s());
         break;
     }
     nl = level + 1;

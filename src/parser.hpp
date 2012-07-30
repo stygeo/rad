@@ -78,7 +78,6 @@
 
 #include "lex.h"     // the lexer
 #include "treenode.h" // the syntax tree
-#include "value.h"
 #include "types.h"
 
 extern SyntTree tree;
@@ -97,14 +96,14 @@ char *make_name();
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE 
-#line 32 "rules/rad.y"
+#line 31 "rules/rad.y"
 {
   char     *str;     // a char string
   int       num;     // a number
   rd_tree_node *tnode;   // node in the syntax tree
 }
 /* Line 2616 of glr.c.  */
-#line 108 "src/parser.hpp"
+#line 107 "src/parser.hpp"
 	YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1

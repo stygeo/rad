@@ -2,7 +2,6 @@
 
 #include <iostream.h>
 #include <string.h>
-#include "value.h"
 
 class VALUE;
 

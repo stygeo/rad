@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include "value.h"
 
 class VALUE;
 
@@ -45,7 +44,6 @@ class rd_tree_node  {
     int coerce_to_string(int childno);
 
     rd_node_type type;                // what type of node is it?
-    rd_value *cont;
 
     VALUE *obj;
     char *constant;

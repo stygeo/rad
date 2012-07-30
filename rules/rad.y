@@ -8,7 +8,6 @@
 
 #include "lex.h"     // the lexer
 #include "treenode.h" // the syntax tree
-#include "value.h"
 #include "types.h"
 
 extern SyntTree tree;

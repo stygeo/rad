@@ -7,10 +7,6 @@
 extern rd_int_instr *intcode;
 extern std::vector<VALUE*> constants;
 
-rd_value *nil = new rd_value(0, rd_NIL);
-
-rd_instr *rd_mk_instr(rd_opcode opcode, rd_value *val = nil);
-
 rd_vm::rd_vm() {
   sym_tab = new rd_sym_tab();
 }
@@ -24,10 +20,6 @@ void rd_vm::reset() {
 }
 
 
-rd_instr *rd_mk_instr(rd_opcode opcode, rd_value *val) {
-  return new rd_instr(opcode, val);
-}
-
 rd_instr *rd_mk_instr(rd_opcode opcode, int target) {
   return new rd_instr(opcode, target);
 }
@@ -38,6 +30,10 @@ rd_instr *rd_mk_instr(rd_opcode opcode, char *constant) {
 
 rd_instr *rd_mk_instr(rd_opcode opcode, VALUE *obj) {
   return new rd_instr(opcode, obj);
+}
+
+rd_instr *rd_mk_instr(rd_opcode opcode) {
+  return new rd_instr(opcode);
 }
 
 void rd_vm::compile() {
