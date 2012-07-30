@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "treenode.h"
+#include "value.h"
 
 void error(char *format, ...);
 

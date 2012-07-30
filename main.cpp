@@ -9,13 +9,15 @@
 #include "parse.h"
 #include "treenode.h"
 #include "intcode.h"
-#include "rd_value.h"
-#include "number.h"
+#include "types.h"
 
 #include "vm.h"
 
 VALUE *rd_number;
 VALUE *rd_class;
+VALUE *rd_true;
+VALUE *rd_false;
+VALUE *rd_string;
 
 int errors = 0;
 void show_help() {
@@ -61,6 +63,8 @@ rd_int_instr *intcode;
 int main(int argc, char *argv[]) {
   init_rd_class();
   init_rd_number();
+  init_rd_boolean();
+  init_rd_string();
 
   yyin = NULL;
   if(argc >= 2) {

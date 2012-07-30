@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 #include "symtab.h"
+#include "rd_value.h"
 
-rd_sym_desc::rd_sym_desc(const char *_name, rd_value *_val, int _line)    {
+rd_sym_desc::rd_sym_desc(const char *_name, VALUE *_val, int _line)    {
   name = _name;
   val = _val;
   line = _line;
@@ -15,7 +16,7 @@ rd_sym_desc::~rd_sym_desc() {
 }
 
 void rd_sym_desc::show() {
-  printf("| %-20s | %4d |(= \"%s\")\n", name, line, val->sval());
+  printf("| %-20s | %4d |(= \"%s\")\n", name, line, val->str_val);
 }
 
 rd_sym_tab::rd_sym_tab() {

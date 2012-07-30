@@ -32,6 +32,14 @@ rd_instr *rd_mk_instr(rd_opcode opcode, int target) {
   return new rd_instr(opcode, target);
 }
 
+rd_instr *rd_mk_instr(rd_opcode opcode, char *constant) {
+  return new rd_instr(opcode, constant);
+}
+
+rd_instr *rd_mk_instr(rd_opcode opcode, VALUE *obj) {
+  return new rd_instr(opcode, obj);
+}
+
 void rd_vm::compile() {
   int ninstr = intcode->len();
   rd_int_instr *cinstr = intcode;
@@ -44,19 +52,19 @@ void rd_vm::compile() {
         instr = rd_mk_instr(OP_NOP);
         break;
       case OP_PUT_STR:
-        instr = rd_mk_instr(OP_PUT_STR, cinstr->str);
+        instr = rd_mk_instr(OP_PUT_STR, cinstr->obj);
         break;
       case OP_PUT_OBJ:
-        instr = rd_mk_instr(OP_PUT_OBJ, cinstr->str);
+        instr = rd_mk_instr(OP_PUT_OBJ, cinstr->obj);
         break;
       case OP_SET_LOCAL:
-        instr = rd_mk_instr(OP_SET_LOCAL, cinstr->str);
+        instr = rd_mk_instr(OP_SET_LOCAL, cinstr->constant);
         break;
       case OP_GET_LOCAL:
-        instr = rd_mk_instr(OP_GET_LOCAL, cinstr->str);
+        instr = rd_mk_instr(OP_GET_LOCAL, cinstr->constant);
         break;
       case OP_GET_CONST:
-        instr = rd_mk_instr(OP_GET_CONST, cinstr->str);
+        instr = rd_mk_instr(OP_GET_CONST, cinstr->constant);
         break;
       case OP_PUTS:
         instr = rd_mk_instr(OP_PUTS);
@@ -97,8 +105,11 @@ void rd_vm::stat() {
   puts("+------+----------------------+-----------------------------------+");
 }
 
+extern VALUE *rd_true;
+extern VALUE *rd_false;
+
 void rd_vm::execute() {
-  rd_value *pval;
+  VALUE *pval;
   int ip = 0;  // Instruction pointer reset = 0
   int cip = 0; // Current instruction pointer
   int ninstrs = instrs.size();
@@ -118,18 +129,18 @@ void rd_vm::execute() {
     switch(instr->opcode) {
       case OP_PUT_STR: case OP_PUT_OBJ:
         // Push value on stack
-        stack.push(instr->val);
+        stack.push(instr->obj);
         break;
       case OP_SET_LOCAL:
       {
         // Find variable
-        rd_sym_desc *sd = sym_tab->find(instr->val->sval());
+        rd_sym_desc *sd = sym_tab->find(instr->constant);
         // Pop stack
         pval = stack.pop();
 
         if(sd == NULL) {
           // Undefined variable, create new
-          sd = new rd_sym_desc(instr->val->sval(), pval, 0);
+          sd = new rd_sym_desc(instr->constant, pval, 0);
           // Add it to the symbol table
           sym_tab->add(sd);
         } else {
@@ -142,11 +153,11 @@ void rd_vm::execute() {
       case OP_GET_LOCAL:
       {
         // Find variable
-        rd_sym_desc *t = sym_tab->find(instr->val->sval());
-        rd_value *val;
+        rd_sym_desc *t = sym_tab->find(instr->constant);
+        VALUE *val;
 
         if(t == NULL) {
-          printf("Undefined variable or method: `%s' (NameError)\n", instr->val->sval());
+          printf("Undefined variable or method: `%s' (NameError)\n", instr->constant);
           exit(1);
         } else {
           val = t->val;
@@ -158,9 +169,9 @@ void rd_vm::execute() {
       }
       case OP_GET_CONST:
       {
-        VALUE *constant = rd_find_constant(instr->val->sval());
+        VALUE *constant = rd_find_constant(instr->constant);
         if(constant == NULL) {
-          printf("NameError: Uninitialized constant %s\n", instr->val->sval());
+          printf("NameError: Uninitialized constant %s\n", instr->constant);
           exit(1);
         }
         break;
@@ -168,16 +179,18 @@ void rd_vm::execute() {
       case OP_PUTS:
       {
         pval = stack.pop();
-        std::cout << pval->to_s() << std::endl;
+        std::cout << pval->send("to_s", 1, new VALUE())->str_val << std::endl;
+
         break;
       }
       case OP_EQUAL:
       {
-        rd_value *lval, *rval;
+        VALUE *lval, *rval;
 
         lval = stack.pop(); rval = stack.pop();
-        //std::cout << "lval: " << lval->to_s() << " rval " << rval->to_s() << std::endl;
-        stack.push(new rd_value(lval->eq(rval)));
+//        std::cout << "lval: " << lval->to_s() << " rval " << rval->to_s() << std::endl;
+        //stack.push(new rd_value(lval->eq(rval)));
+        stack.push(rd_false);
 
         break;
       }
@@ -189,7 +202,7 @@ void rd_vm::execute() {
       case OP_JMPF:
       {
         pval = stack.pop();
-        if(!pval->bval()) {
+        if(pval == rd_false) {
           //printf("I need to jump to: %d\n", instr->target);
           ip = instr->target;
         }
@@ -197,7 +210,7 @@ void rd_vm::execute() {
       }
       case OP_JMPT:
         pval = stack.pop();
-        if(pval->bval())
+        if(pval == rd_true)
           ip = instr->target;
         break;
     }

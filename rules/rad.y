@@ -9,6 +9,7 @@
 #include "lex.h"     // the lexer
 #include "treenode.h" // the syntax tree
 #include "value.h"
+#include "types.h"
 
 extern SyntTree tree;
 
@@ -75,7 +76,7 @@ statement
       ;
 
 getconstant
-      : OBJECT                      {$$ = new rd_tree_node(GET_CONST); $$->cont = new rd_value($1);}
+      : OBJECT                      {$$ = new rd_tree_node(GET_CONST); $$->constant = $1;}
 
 head_expr
       : expression                  {$$ = $1;}
@@ -127,7 +128,7 @@ assign_expression
       : ID ASSIGN assign_expression
         {
           rd_tree_node *setlocal = new rd_tree_node(SET_LOCAL);
-          setlocal->cont = new rd_value($1);
+          setlocal->constant = $1;
           $$ = new rd_tree_node(ASSIGN_EXPR, $3, setlocal);
         }
       | simple_expression           {$$ = $1;}
@@ -140,15 +141,15 @@ simple_expression
       ;
 
 putstring
-      : STRING      {$$ = new rd_tree_node(PUT_STR); $$->cont = new rd_value($1);}
+      : STRING      {$$ = new rd_tree_node(PUT_STR); $$->obj = rd_new_string($1);}
       ;
 
 putobject
-      : NUMBER      {$$ = new rd_tree_node(PUT_OBJ); $$->cont = new rd_value($1);}
+      : NUMBER      {$$ = new rd_tree_node(PUT_OBJ); $$->obj = rd_new_number($1);}
       ;
 
 getlocal
-      : ID          {$$ = new rd_tree_node(GET_LOCAL); $$->cont = new rd_value($1);}
+      : ID          {$$ = new rd_tree_node(GET_LOCAL); $$->constant = $1;}
       ;
 %%
 

@@ -9,7 +9,7 @@
 #include "instr.h"
 #include "class.h"
 
-typedef rd_stack<rd_value*> vm_stack;
+typedef rd_stack<VALUE*> vm_stack;
 
 class rd_vm {
   public:
@@ -22,6 +22,5 @@ class rd_vm {
   private:
     vm_stack stack;
     rd_sym_tab *sym_tab;
-    rd_object *current_object;
     std::vector<rd_instr*> instrs;
 };

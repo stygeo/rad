@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "treenode.h"
 #include "intcode.h"
+#include "rd_value.h"
 
 // Number: assigns line numbers to this block of intermediate code, starting with ln
 void rd_int_instr::number(int ln)   {
@@ -28,9 +29,10 @@ char *op_name[] = {
 // show this block of intermediate code
 void rd_int_instr::show()   {
   printf("| %04d | %-20s |", n, op_name[opcode]);
-  if(str)     printf("(S) %-30s |", str->to_s());
-  if(target)  printf("(T) %-30d |", target->n);
-  if(!str && !target) printf("%-34s |", "");
+  if(constant) printf(" %-30s |", constant);
+  if(obj)   printf(" %-30d |", obj->int_val);
+  if(target)   printf(" %-30d |", target->n);
+  if(!obj && !constant && !target) printf("%-31s |", "");
   printf("\n");
 
   if(next != NULL)   next->show();
@@ -78,15 +80,15 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
     case EMPTY_STMT:
       return new rd_int_instr(OP_NOP);
     case SET_LOCAL:
-      return new rd_int_instr(OP_SET_LOCAL, root->cont);
+      return new rd_int_instr(OP_SET_LOCAL, root->constant);
     case GET_LOCAL:
-      return new rd_int_instr(OP_GET_LOCAL, root->cont);
+      return new rd_int_instr(OP_GET_LOCAL, root->constant);
     case GET_CONST:
-      return new rd_int_instr(OP_GET_CONST, root->cont);
+      return new rd_int_instr(OP_GET_CONST, root->constant);
     case PUT_STR:
-      return new rd_int_instr(OP_PUT_STR, root->cont);
+      return new rd_int_instr(OP_PUT_STR, root->obj);
     case PUT_OBJ:
-      return new rd_int_instr(OP_PUT_OBJ, root->cont);
+      return new rd_int_instr(OP_PUT_OBJ, root->obj);
     case ASSIGN_EXPR:
       blk1 = rd_mk_int_code(root->child[0]);
       blk2 = rd_mk_int_code(root->child[1]);

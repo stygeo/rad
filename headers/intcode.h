@@ -22,16 +22,19 @@ enum rd_opcode  {
 // Intermediate code instruction
 class rd_int_instr {
 public:
-   rd_int_instr()   {opcode = OP_NOP; next=NULL; target=NULL; str=NULL;}
-   rd_int_instr(rd_opcode _opcode)   {opcode = _opcode; next=NULL; target=NULL; str=NULL;}
-   rd_int_instr(rd_opcode _opcode, rd_int_instr *_target)   {opcode = _opcode; target=_target; next=NULL; str=NULL;}
-   rd_int_instr(rd_opcode _opcode, rd_value *_str) {opcode = _opcode; str = _str;}
+   rd_int_instr()   {opcode = OP_NOP; next=NULL; target=NULL;}
+   rd_int_instr(rd_opcode _opcode)   {opcode = _opcode; next=NULL; target=NULL;}
+   rd_int_instr(rd_opcode _opcode, rd_int_instr *_target)   {opcode = _opcode; target=_target; next=NULL;}
+   rd_int_instr(rd_opcode _opcode, char *_const) {opcode = _opcode; constant = _const; next=NULL;}
+   rd_int_instr(rd_opcode _opcode, VALUE *_obj) {opcode = _opcode; obj = _obj; next=NULL;}
+
    void show ();
    void number (int ln); // number the lines of this code block
    int len();
 
    int       n;         // line number
-   rd_value *str;
+   char *constant = NULL;
+   VALUE *obj = NULL;
    rd_opcode    opcode;    // the opcode
    rd_int_instr *target;    // jump target operand
    rd_int_instr *next;      // the next instruction

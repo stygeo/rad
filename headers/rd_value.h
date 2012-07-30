@@ -29,13 +29,13 @@ struct rd_method {
 class VALUE {
   public:
     VALUE() {}
-    VALUE(const VALUE &val);
+    VALUE(const VALUE *val);
 
     T_TYPE type;
     const char *name;
     VALUE *super;
 
-    void send(char *method, int argc);
+    VALUE *send(char *method, int argc, ...);
     void define_method(char *method, VALUE *(*func)(), int argc);
     void define_method(char *method, std::vector<rd_instr*> body, int argc);
 

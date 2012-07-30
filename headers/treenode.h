@@ -2,6 +2,8 @@
 #include <vector>
 #include "value.h"
 
+class VALUE;
+
 // The syntax tree node types
 enum rd_node_type {
   // Statements
@@ -44,12 +46,14 @@ class rd_tree_node  {
 
     rd_node_type type;                // what type of node is it?
     rd_value *cont;
+
+    VALUE *obj;
+    char *constant;
     std::vector<rd_tree_node*>child;  // pointers to childen
     rd_data_type rettype;             // the 'return' type of this node
   private:
     void show(int level);
 };
 
-typedef rd_tree_node *SyntTree;
 typedef rd_tree_node *SyntTree;
 
