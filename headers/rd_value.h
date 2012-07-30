@@ -28,7 +28,7 @@ struct rd_method {
 
 class VALUE {
   public:
-    VALUE() {}
+    VALUE();
     VALUE(const VALUE *val);
 
     T_TYPE type;
@@ -42,6 +42,8 @@ class VALUE {
     std::map<char *, rd_method*> methods;
     char *str_val;
     int   int_val;
+
+    const int object_id;
 };
 
 VALUE *rd_define_class(const char *name, VALUE *super = NULL);

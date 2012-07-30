@@ -6,6 +6,7 @@
 
 extern rd_int_instr *intcode;
 extern std::vector<VALUE*> constants;
+extern VALUE *current_object;
 
 rd_vm::rd_vm() {
   sym_tab = new rd_sym_tab();
@@ -77,6 +78,9 @@ void rd_vm::compile() {
       case OP_JMPT:
         instr = rd_mk_instr(OP_JMPT, cinstr->target->n);
         break;
+      case OP_SEND:
+        instr = rd_mk_instr(OP_SEND, cinstr->constant);
+        break;
       case JUMPTARGET:
         instr = rd_mk_instr(OP_NOP, cinstr->n);
         break;
@@ -126,6 +130,7 @@ void rd_vm::execute() {
       case OP_PUT_STR: case OP_PUT_OBJ:
         // Push value on stack
         stack.push(instr->obj);
+        current_object = instr->obj;
         break;
       case OP_SET_LOCAL:
       {
@@ -184,10 +189,18 @@ void rd_vm::execute() {
         VALUE *lval, *rval;
 
         lval = stack.pop(); rval = stack.pop();
-//        std::cout << "lval: " << lval->to_s() << " rval " << rval->to_s() << std::endl;
-        //stack.push(new rd_value(lval->eq(rval)));
-        stack.push(rd_false);
+        //std::cout << "lval: " << lval->to_s() << " rval " << rval->to_s() << std::endl;
+        if(lval->type == T_NUMBER && rval->type == T_NUMBER) {
+          stack.push((lval->int_val == rval->int_val ? rd_true : rd_false));
+        } else {
+          stack.push(rd_false);
+        }
 
+        break;
+      }
+      case OP_SEND:
+      {
+        stack.push(current_object->send(instr->constant, 0));
         break;
       }
       case OP_JMP:

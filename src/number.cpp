@@ -19,6 +19,7 @@ VALUE *number_to_s() {
 
 void init_rd_number() {
   rd_number = rd_define_class("Number", rd_class);
+  rd_number->type = T_NUMBER;
   rd_number->define_method("to_s", number_to_s, 0);
 }
 

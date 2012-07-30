@@ -21,7 +21,7 @@ int rd_int_instr::len() {
 char *op_name[] = {
   "nil", "putstring", "putobject", "setlocal",
   "getlocal", "puts", "opt_eq", "jumpunless",
-  "jumpif", "jump", "getconstant",
+  "jumpif", "jump", "getconstant", "send",
 
   "jumptarget",
 };
@@ -29,10 +29,10 @@ char *op_name[] = {
 // show this block of intermediate code
 void rd_int_instr::show()   {
   printf("| %04d | %-20s |", n, op_name[opcode]);
-  if(constant) printf(" :%-30s |", constant);
-  if(obj)   printf(" %-30d |", obj->send("to_s", 0)->str_val);
-  if(target)   printf(" %-30d |", target->n);
-  if(!obj && !constant && !target) printf("%-31s |", "");
+  if(constant) printf(" :%-32s ", constant);
+  if(obj)   printf(" %-20s (#%d) ", obj->send("to_s", 0)->str_val, obj->object_id);
+  if(target)   printf(" %-30d ", target->n);
+  if(!obj && !constant && !target) printf("%-34s |", "");
   printf("\n");
 
   if(next != NULL)   next->show();
@@ -89,6 +89,12 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
       return new rd_int_instr(OP_PUT_STR, root->obj);
     case PUT_OBJ:
       return new rd_int_instr(OP_PUT_OBJ, root->obj);
+    case SEND_STMT:
+      return new rd_int_instr(OP_SEND, root->constant);
+    case COMP_STMT:
+      blk1 = rd_mk_int_code(root->child[0]);
+      blk2 = rd_mk_int_code(root->child[1]);
+      return concatenate(blk1, blk2);
     case ASSIGN_EXPR:
       blk1 = rd_mk_int_code(root->child[0]);
       blk2 = rd_mk_int_code(root->child[1]);

@@ -46,7 +46,7 @@ char *make_name();
 %type <tnode>  program statement_list statement expression compound_statement
 %type <tnode>  equal_expression assign_expression simple_expression
 %type <tnode>  if_statement block_start head_expr optional_else_statement
-%type <tnode>  getlocal putstring putobject getconstant
+%type <tnode>  getlocal putobject getconstant send
 
 %expect 1
 %expect-rr 0
@@ -70,12 +70,8 @@ statement
       : END_STMT                    {$$ = new rd_tree_node(EMPTY_STMT);}
       | head_expr if_statement      {$$ = new rd_tree_node(BLOCK_STMT, $2, $1);}
       | head_expr END_STMT          {$$ = $1;}
-      | getconstant                 {$$ = $1;}
       | compound_statement          {$$ = $1;}
       ;
-
-getconstant
-      : OBJECT                      {$$ = new rd_tree_node(GET_CONST); $$->constant = $1;}
 
 head_expr
       : expression                  {$$ = $1;}
@@ -92,6 +88,7 @@ if_statement
           $$ = new rd_tree_node(IFTHEN_STMT, $2);
         }
       ;
+
 compound_statement
       : IF expression statement_list optional_else_statement END_CS
         {
@@ -136,15 +133,21 @@ assign_expression
 simple_expression
       : getlocal    {$$ = $1;}
       | putobject   {$$ = $1;}
-      | putstring   {$$ = $1;}
+      | getconstant {$$ = $1;}
+      | simple_expression send {$$ = new rd_tree_node(COMP_STMT, $1, $2);}
       ;
 
-putstring
-      : STRING      {$$ = new rd_tree_node(PUT_STR); $$->obj = rd_new_string($1);}
+send
+      : METHOD                      {$$ = new rd_tree_node(SEND_STMT); $$->constant = $1;}
+      ;
+
+getconstant
+      : OBJECT                      {$$ = new rd_tree_node(GET_CONST); $$->constant = $1;}
       ;
 
 putobject
       : NUMBER      {$$ = new rd_tree_node(PUT_OBJ); $$->obj = rd_new_number($1);}
+      | STRING      {$$ = new rd_tree_node(PUT_STR); $$->obj = rd_new_string($1);}
       ;
 
 getlocal

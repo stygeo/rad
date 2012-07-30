@@ -20,6 +20,8 @@ char *name[] = {
   "while",
   "putspecialobj",
   "getconstant",
+  "send",
+  "compstmt",
 };
 
 // Numbers of children per node type

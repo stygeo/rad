@@ -21,6 +21,8 @@ enum rd_node_type {
   WHILE_STMT,
   PUT_SPEC_OBJ,
   GET_CONST,
+  SEND_STMT,
+  COMP_STMT,
 };
 
 enum rd_data_type {

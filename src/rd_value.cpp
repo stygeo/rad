@@ -3,6 +3,15 @@
 
 VALUE *current_object;
 
+// Global object counter
+int _global_current_object_id = 0;
+int _new_object_id() {
+  return _global_current_object_id++;
+}
+
+VALUE::VALUE() : object_id(_new_object_id()) {
+}
+
 VALUE *rd_find_constant(const char *name) {
   for(auto cnst : constants) {
     if(strcmp(cnst->name, name) == 0)
@@ -33,7 +42,7 @@ VALUE *rd_define_class(const char *name, VALUE *super) {
   return val;
 }
 
-VALUE::VALUE(const VALUE *val) {
+VALUE::VALUE(const VALUE *val) : object_id(_new_object_id()) {
   type = val->type;
   name = val->name;
   methods = val->methods;
@@ -45,31 +54,29 @@ VALUE::VALUE(const VALUE *val) {
 #define POP_CURRENT_OBJ current_object = _prev_obj;
 
 VALUE *VALUE::send(char *method, int argc, ...) {
-  std::map<char *, rd_method*>::iterator it;
-
-  it = methods.find(method);
-  if(it == methods.end()) {
-    printf("Undefined variable or method: `%s' for :%s (NameError)\n", method, name);
-    // rd_raise_exception("");
-    exit(1);
-  } else {
-    if(argc != 0) {
-      va_list arg_list;
-      va_start(arg_list, argc);
-      VALUE *arguments[argc];
-      for(int i = 0; i < argc; i++) {
-        arguments[i] = va_arg(arg_list, VALUE*);
+  for(auto m : methods) {
+    if(strcmp(m.first, method) == 0) {
+      if(argc != 0) {
+        va_list arg_list;
+        va_start(arg_list, argc);
+        VALUE *arguments[argc];
+        for(int i = 0; i < argc; i++) {
+          arguments[i] = va_arg(arg_list, VALUE*);
+        }
+        va_end(arg_list);
       }
-      va_end(arg_list);
+
+      PUSH_CURRENT_OBJ(this);  // Push this object as the current object
+        VALUE *ret = m.second->func();
+      POP_CURRENT_OBJ;         // Restore previous current object
+
+      return ret;
+      // Push something to the stack
     }
-
-    PUSH_CURRENT_OBJ(this);  // Push this object as the current object
-      VALUE *ret = it->second->func();
-    POP_CURRENT_OBJ;         // Restore previous current object
-
-    return ret;
-    // Push something to the stack
   }
+
+  printf("Undefined variable or method: `%s' for :%s (NameError)\n", method, name);
+  exit(1);
 }
 
 void VALUE::define_method(char *_method, VALUE *(*func)(), int argc) {

@@ -1,1 +1,1 @@
-Class
+a = String.new

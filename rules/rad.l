@@ -18,6 +18,7 @@ void identifier();
 void number();
 void string_constant();
 void object();
+void method();
 void eat_comment();
 void print_errorized_token();
 
@@ -33,7 +34,7 @@ IDENT    {LETTER}({LETTER}|{NUMBER})*
 STR      \"[^\"]*\"
 WSPACE   [ \t]+
 OBJECT   [A-Z][a-z]*
-METHOD   \.[A-Za-z]*
+METHOD   \.[A-Za-z_]*
 
 /* ------------------------------------
    Lexer rules
@@ -53,6 +54,8 @@ METHOD   \.[A-Za-z]*
 "new"     {return NEW;}
 {OBJECT}  {object();
           return OBJECT;}
+{METHOD}  {method();
+          return METHOD;}
 "="       {return ASSIGN;}
 "=="      {return EQUAL;}
 "+"       {return CONCAT;}
