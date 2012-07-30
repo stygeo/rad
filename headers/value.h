@@ -1,40 +1,43 @@
-#pragma once
+#ifndef _RD_VALUE_H
+#define _RD_VALUE_H
 
 #include <string.h>
 #include <stdlib.h>
 #include <sstream>
 #include <iostream>
 
+class rd_object;
+
 enum _rd_VAL_TYPE {
   rd_NIL,
   rd_VAL_STR,
   rd_VAL_BOOL,
   rd_VAL_NUM,
-  rd_VAL_DEC
+  rd_VAL_DEC,
+  rd_VAL_OBJ,
 };
 typedef _rd_VAL_TYPE rd_val_type;
 
 class rd_value {
   public:
-    rd_value() {}
-    rd_value(char *_s)                    {s = new char[1];s[0]=0; assign(_s); type = rd_VAL_STR;}
-    rd_value(std::string _s)              {s = new char[1];s[0]=0; assign(_s.c_str()); type = rd_VAL_STR;}
-    rd_value(int   _i)                    {i = _i; type = rd_VAL_NUM;}
-    rd_value(int   _i, rd_val_type _type) {i = _i; type = _type;}
-    rd_value(float _f)                    {f = _f; type = rd_VAL_DEC;}
-    rd_value(bool  _b)                    {b = _b; type = rd_VAL_BOOL;}
+    rd_value(char *_s);
+    rd_value(std::string _s);
+    rd_value(int   _i);
+    rd_value(int   _i, rd_val_type _type);
+    rd_value(float _f);
+    rd_value(bool  _b);
 
-    char *sval() const  {return s;}   // Return string value
-    int   ival() const  {return i;}   // Return number value
-    bool  bval() const  {return b;}   // Return boolean value
-    float fval() const  {return f;}   // Return float value
-    void  assign(char *_s)   {int l; delete[] s; l = strlen(_s); s = new char[l+1]; strcpy(s, _s);type = rd_VAL_STR;}
-    void  assign(int   _i)   {i = _i;type = rd_VAL_NUM;}
-    void  assign(bool  _b)   {b = _b;type = rd_VAL_BOOL;}
-    void  assign(float _f)   {f = _f;type = rd_VAL_DEC;}
-    int   len() const        {return strlen(s);}
+    char *sval() const;
+    int   ival() const;
+    bool  bval() const;
+    float fval() const;
+    void  assign(char *_s);
+    void  assign(int   _i);
+    void  assign(bool  _b);
+    void  assign(float _f);
+    int   len() const;
 
-    rd_val_type kind_of() const {return type;}
+    rd_val_type kind_of() const;
 
     bool eq(const rd_value *rval) const;
     // Somehow overloaded operators don't work ...
@@ -58,8 +61,9 @@ class rd_value {
     int   i;    // Integer value
     float f;    // Float value
     bool  b;    // Bool value
+    rd_object *obj;  // Object value
 
     rd_val_type type;
 };
 
-
+#endif

@@ -14,6 +14,7 @@
 
    // Function prototype
    int yylex ();
+   FILE *yy_scan_string(const char*);
 #endif
 
 #endif

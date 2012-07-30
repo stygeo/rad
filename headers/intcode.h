@@ -1,6 +1,7 @@
 #pragma once
 
 #include "treenode.h"
+#include "value.h"
 
 enum rd_opcode  {
   OP_NOP,           // no operation
@@ -13,6 +14,7 @@ enum rd_opcode  {
   OP_JMPF,
   OP_JMPT,
   OP_JMP,
+  OP_GET_CONST,
 
   JUMPTARGET,
 };

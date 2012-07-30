@@ -20,7 +20,7 @@ int rd_int_instr::len() {
 char *op_name[] = {
   "nil", "putstring", "putobject", "setlocal",
   "getlocal", "puts", "opt_eq", "jumpunless",
-  "jumpif", "jump",
+  "jumpif", "jump", "getconstant",
 
   "jumptarget",
 };
@@ -81,6 +81,8 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
       return new rd_int_instr(OP_SET_LOCAL, root->cont);
     case GET_LOCAL:
       return new rd_int_instr(OP_GET_LOCAL, root->cont);
+    case GET_CONST:
+      return new rd_int_instr(OP_GET_CONST, root->cont);
     case PUT_STR:
       return new rd_int_instr(OP_PUT_STR, root->cont);
     case PUT_OBJ:

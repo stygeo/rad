@@ -18,6 +18,8 @@ char *name[] = {
   "equal",
   "block",
   "while",
+  "putspecialobj",
+  "getconstant",
 };
 
 // Numbers of children per node type
@@ -50,20 +52,10 @@ void rd_tree_node::show(int level)   {
 
 // Check the semantics of this node
 int rd_tree_node::coerce_to_string(int childno) {
-  if(child[childno]->rettype == T_STRING)
-    return 1;
-  if(child[childno]->rettype != T_BOOL)
-    return 0;
   return 1;
 }
 
 void rd_tree_node::check() {
-  switch(type)  {
-    case ASSIGN_EXPR:
-      rettype = T_STRING;
-      break;
-  }
-
   // Now, check the semantics
   switch(type)  {
     case ASSIGN_EXPR: // coerce expression to string

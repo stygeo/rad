@@ -1,6 +1,11 @@
 #include <iostream>
 #include <string.h>
-#include <vm.h>
+
+#include "vm.h"
+#include "rd_value.h"
+
+extern rd_int_instr *intcode;
+extern std::vector<VALUE*> constants;
 
 rd_value *nil = new rd_value(0, rd_NIL);
 
@@ -18,7 +23,6 @@ void rd_vm::reset() {
   stack.empty();
 }
 
-extern rd_int_instr *intcode;
 
 rd_instr *rd_mk_instr(rd_opcode opcode, rd_value *val) {
   return new rd_instr(opcode, val);
@@ -51,6 +55,9 @@ void rd_vm::compile() {
       case OP_GET_LOCAL:
         instr = rd_mk_instr(OP_GET_LOCAL, cinstr->str);
         break;
+      case OP_GET_CONST:
+        instr = rd_mk_instr(OP_GET_CONST, cinstr->str);
+        break;
       case OP_PUTS:
         instr = rd_mk_instr(OP_PUTS);
         break;
@@ -82,7 +89,7 @@ void rd_vm::compile() {
 void rd_vm::stat() {
   puts("+-----------------------------------------------------------------+");
   puts("|                    Rad VM Stats                                 |");
-  printf("| instr. %-56ld |\n", instrs.size());
+  //printf("| instr. %-56ld |\n", instrs.size());
   puts("+------+----------------------+-----------------------------------+");
   puts("| #    | Instruction          | Value (opt)                       |");
   puts("+------+----------------------+-----------------------------------+");
@@ -139,14 +146,23 @@ void rd_vm::execute() {
         rd_value *val;
 
         if(t == NULL) {
-          printf("Undefined variable or method: `%s'\n", instr->val->sval());
-          val = nil;
+          printf("Undefined variable or method: `%s' (NameError)\n", instr->val->sval());
+          exit(1);
         } else {
           val = t->val;
         }
 
         stack.push(val);
 
+        break;
+      }
+      case OP_GET_CONST:
+      {
+        VALUE *constant = rd_find_constant(instr->val->sval());
+        if(constant == NULL) {
+          printf("NameError: Uninitialized constant %s\n", instr->val->sval());
+          exit(1);
+        }
         break;
       }
       case OP_PUTS:

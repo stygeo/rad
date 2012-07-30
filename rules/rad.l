@@ -17,6 +17,7 @@ extern "C" int yywrap(); // Declare yywrap
 void identifier();
 void number();
 void string_constant();
+void object();
 void eat_comment();
 void print_errorized_token();
 
@@ -31,6 +32,8 @@ NUMBER   [0-9]
 IDENT    {LETTER}({LETTER}|{NUMBER})*
 STR      \"[^\"]*\"
 WSPACE   [ \t]+
+OBJECT   [A-Z][a-z]*
+METHOD   \.[A-Za-z]*
 
 /* ------------------------------------
    Lexer rules
@@ -46,6 +49,10 @@ WSPACE   [ \t]+
 "return"  {return RETURN;}
 "end"     {return END_CS;}
 "while"   {return WHILE;}
+"."       {return DOT;}
+"new"     {return NEW;}
+{OBJECT}  {object();
+          return OBJECT;}
 "="       {return ASSIGN;}
 "=="      {return EQUAL;}
 "+"       {return CONCAT;}
@@ -91,6 +98,18 @@ void string_constant() {
   int l = strlen(yytext)-2;
   yylval.str = new char[l+1];
   strncpy(yylval.str, &yytext[1], l); yylval.str[l] = 0;
+}
+
+void method() {
+  int l = strlen(yytext)-1;
+  yylval.str = new char[l+1];
+  strncpy(yylval.str, &yytext[1], l); yylval.str[l] = 0;
+}
+
+void object() {
+  int l = strlen(yytext);
+  yylval.str = new char[l+1];
+  strncpy(yylval.str, &yytext[0], l); yylval.str[l] = 0;
 }
 
 /* Pass number */

@@ -18,13 +18,11 @@ enum rd_node_type {
   EQUAL_EXPR,
   BLOCK_STMT,
   WHILE_STMT,
+  PUT_SPEC_OBJ,
+  GET_CONST,
 };
 
 enum rd_data_type {
-  T_VOID,
-  T_STRING,
-  T_BOOL,
-  T_ARGS
 };
 
 const int MXCHILD = 3;   // max. number of children a tree node can have

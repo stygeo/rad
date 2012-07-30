@@ -39,13 +39,14 @@ char *make_name();
 %token CONCAT END_STMT OPEN_PAR CLOSE_PAR
 %token BEGIN_CS END_CS DEF THEN END COMMA RETURN
 %token WHILE
-%token <str> ID STRING
+%token DOT NEW
+%token <str> ID STRING METHOD OBJECT
 %token <num> NUMBER
 
 %type <tnode>  program statement_list statement expression compound_statement
 %type <tnode>  equal_expression assign_expression simple_expression
 %type <tnode>  if_statement block_start head_expr optional_else_statement
-%type <tnode>  getlocal putstring putobject
+%type <tnode>  getlocal putstring putobject getconstant
 
 %expect 1
 %expect-rr 0
@@ -69,8 +70,12 @@ statement
       : END_STMT                    {$$ = new rd_tree_node(EMPTY_STMT);}
       | head_expr if_statement      {$$ = new rd_tree_node(BLOCK_STMT, $2, $1);}
       | head_expr END_STMT          {$$ = $1;}
+      | getconstant                 {$$ = $1;}
       | compound_statement          {$$ = $1;}
       ;
+
+getconstant
+      : OBJECT                      {$$ = new rd_tree_node(GET_CONST); $$->cont = new rd_value($1);}
 
 head_expr
       : expression                  {$$ = $1;}
