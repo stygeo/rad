@@ -29,3 +29,5 @@ while a == 1
   puts "in while loop. Setting a to 2"
   a = 2
 end
+
+puts "test"

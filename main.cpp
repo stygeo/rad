@@ -10,6 +10,7 @@
 #include "treenode.h"
 #include "intcode.h"
 #include "types.h"
+#include "ird.h"
 
 #include "vm.h"
 
@@ -23,6 +24,7 @@ int errors = 0;
 void show_help() {
   printf("Usage: rad [switches] [--] [programfile] [arguments]\n");
   printf("  %-20s one line script\n", "-e 'command'");
+  printf("  %-20s interactive rad\n", "-ird");
   printf("  %-20s print version number and go in verbose mode\n", "-v");
   printf("  %-20s this\n", "-h");
 
@@ -87,6 +89,9 @@ int main(int argc, char *argv[]) {
         printf("rad: no code specified for -e");
         exit(1);
       }
+    }
+    else if(strcmp(argv[1], "-ird") == 0) {
+      init_ird(argc, argv);
     }
     else {
       yyin = fopen(argv[1], "rt");

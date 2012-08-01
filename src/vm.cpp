@@ -95,14 +95,10 @@ void rd_vm::compile() {
 }
 
 void rd_vm::stat() {
-  puts("+-----------------------------------------------------------------+");
-  puts("|                    Rad VM Stats                                 |");
-  //printf("| instr. %-56ld |\n", instrs.size());
-  puts("+------+----------------------+-----------------------------------+");
-  puts("| #    | Instruction          | Value (opt)                       |");
-  puts("+------+----------------------+-----------------------------------+");
+  puts("== disasm: RadVM::InstructionSequence ==================");
+  printf("| instr. %-56ld |\n", instrs.size());
   intcode->show();
-  puts("+------+----------------------+-----------------------------------+");
+  puts("====");
 }
 
 extern VALUE *rd_true;

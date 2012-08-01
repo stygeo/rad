@@ -28,11 +28,11 @@ char *op_name[] = {
 
 // show this block of intermediate code
 void rd_int_instr::show()   {
-  printf("| %04d | %-20s |", n, op_name[opcode]);
+  printf("%04d %-20s", n, op_name[opcode]);
   if(constant) printf(" :%-32s ", constant);
   if(obj)   printf(" %-20s (#%d) ", obj->send("to_s", 0)->str_val, obj->object_id);
   if(target)   printf(" %-30d ", target->n);
-  if(!obj && !constant && !target) printf("%-34s |", "");
+  if(!obj && !constant && !target) printf("%-34s ", "");
   printf("\n");
 
   if(next != NULL)   next->show();
