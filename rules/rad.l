@@ -44,7 +44,6 @@ METHOD   \.[A-Za-z_]*
 
 "if"      {return IF;}
 "else"    {return ELSE;}
-"puts"    {return PUTS;}
 "input"   {return INPUT;}
 "def"     {return DEF;}
 "return"  {return RETURN;}

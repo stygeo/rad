@@ -8,6 +8,7 @@
 #include "symtab.h"
 #include "instr.h"
 #include "class.h"
+#include "object_space.h"
 
 typedef rd_stack<VALUE*> vm_stack;
 
@@ -20,7 +21,7 @@ class rd_vm {
     void reset();
     void stat();
   private:
-    vm_stack stack;
+    vm_stack *stack;
     rd_sym_tab *sym_tab;
     std::vector<rd_instr*> instrs;
 };

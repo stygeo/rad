@@ -13,6 +13,7 @@ struct rd_instr {
 
   rd_opcode   opcode;
   int         target;
+  int         argc;
 
   char *constant;
   VALUE *obj;

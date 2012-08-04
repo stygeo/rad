@@ -20,7 +20,7 @@ int rd_int_instr::len() {
 // Names of the opcodes
 char *op_name[] = {
   "nil", "putstring", "putobject", "setlocal",
-  "getlocal", "puts", "opt_eq", "jumpunless",
+  "getlocal", "opt_eq", "jumpunless",
   "jumpif", "jump", "getconstant", "send",
 
   "jumptarget",
@@ -29,10 +29,23 @@ char *op_name[] = {
 // show this block of intermediate code
 void rd_int_instr::show()   {
   printf("%04d %-20s", n, op_name[opcode]);
-  if(constant) printf(" :%-32s ", constant);
-  if(obj)   printf(" %-20s (#%d) ", obj->send("to_s", 0)->str_val, obj->object_id);
-  if(target)   printf(" %-30d ", target->n);
-  if(!obj && !constant && !target) printf("%-34s ", "");
+  switch(opcode) {
+    case OP_SEND:
+      printf(" [:%s, %d]", constant, argc);
+      break;
+    case OP_GET_LOCAL:
+      printf(" %s", constant);
+      break;
+    case OP_PUT_STR:
+      printf(" \"%s\"", obj->send("to_s", 0)->str_val);
+      break;
+    default:
+      if(constant) printf(" :%-32s ", constant);
+      if(obj)   printf(" %-20s (#%d) ", obj->send("to_s", 0)->str_val, obj->object_id);
+      if(target)   printf(" %-30d ", target->n);
+      if(!obj && !constant && !target) printf("%-34s ", "");
+      break;
+  }
   printf("\n");
 
   if(next != NULL)   next->show();
@@ -56,7 +69,7 @@ rd_int_instr *prefix_jt(rd_int_instr *blk, rd_int_instr *ref_instr)   {
    return jt;
 }
 
-
+int argc = 0;
 // Recursively generate intermediate code
 rd_int_instr *rd_mk_int_code(SyntTree tree)  {
   rd_tree_node *root = tree;
@@ -66,6 +79,25 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
                *begin, *jump2begin;
 
   switch(root->type)  {
+    case ARGUMENT_LIST:
+    {
+      blk1 = rd_mk_int_code(root->child[0]);
+      argc = 1;
+      rd_int_instr *next = blk1;
+      while( (next = next->next) != NULL ) {
+        argc++;
+      }
+
+      return blk1;
+    }
+    case ARGUMENT:
+      blk1 = rd_mk_int_code(root->child[0]);
+      if(root->child[1] != NULL) {
+        blk2 = rd_mk_int_code(root->child[1]);
+        return concatenate(blk1, blk2);
+      } else {
+        return blk1;
+      }
     case STMT_LIST:
       blk1 = rd_mk_int_code(root->child[0]);
       blk2 = rd_mk_int_code(root->child[1]);
@@ -90,18 +122,34 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
     case PUT_OBJ:
       return new rd_int_instr(OP_PUT_OBJ, root->obj);
     case SEND_STMT:
-      return new rd_int_instr(OP_SEND, root->constant);
+    {
+      rd_int_instr *send = new rd_int_instr(OP_SEND, root->constant);
+      send->argc = argc;
+
+      // Reset argument count
+      argc = 0;
+      return send;
+    }
     case COMP_STMT:
+
+      if(root->child[2] != NULL) {
+        cond = rd_mk_int_code(root->child[2]);
+
+        blk1 = rd_mk_int_code(root->child[0]);
+        blk2 = rd_mk_int_code(root->child[1]);
+
+        concatenate(cond, blk1);
+        concatenate(blk1, blk2);
+        return cond;
+      }
+
       blk1 = rd_mk_int_code(root->child[0]);
       blk2 = rd_mk_int_code(root->child[1]);
+
       return concatenate(blk1, blk2);
     case ASSIGN_EXPR:
       blk1 = rd_mk_int_code(root->child[0]);
       blk2 = rd_mk_int_code(root->child[1]);
-      return concatenate(blk1, blk2);
-    case PUTS_STMT:
-      blk1 = rd_mk_int_code(root->child[0]);
-      blk2 = new rd_int_instr(OP_PUTS);
       return concatenate(blk1, blk2);
     case EQUAL_EXPR:
       blk1 = rd_mk_int_code(root->child[0]);

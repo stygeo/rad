@@ -11,6 +11,7 @@
 #include "types.h"
 
 extern SyntTree tree;
+extern int _argc;
 
 // Yacc (bison) defines
 #define YYDEBUG 1       // Generate debug code; needed for YYERROR_VERBOSE
@@ -21,6 +22,7 @@ void error(char *format, ...);
 // Forward references
 void yyerror(const char *msg);
 char *make_name();
+
 
 %}
 %glr-parser
@@ -35,7 +37,7 @@ char *make_name();
 }
 
 /* Token definitions */
-%token ERROR_TOKEN IF ELSE PUTS INPUT ASSIGN EQUAL
+%token ERROR_TOKEN IF ELSE INPUT ASSIGN EQUAL
 %token CONCAT END_STMT OPEN_PAR CLOSE_PAR
 %token BEGIN_CS END_CS DEF THEN END COMMA RETURN
 %token WHILE
@@ -46,9 +48,9 @@ char *make_name();
 %type <tnode>  program statement_list statement expression compound_statement
 %type <tnode>  equal_expression assign_expression simple_expression
 %type <tnode>  if_statement block_start head_expr optional_else_statement
-%type <tnode>  getlocal putobject getconstant send
+%type <tnode>  getlocal putobject getconstant send argumentlist arguments
 
-%expect 1
+%expect 5
 %expect-rr 0
 
 %%
@@ -75,7 +77,6 @@ statement
 
 head_expr
       : expression                  {$$ = $1;}
-      | PUTS expression             {$$ = new rd_tree_node(PUTS_STMT, $2);}
       ;
 
 block_start
@@ -134,11 +135,25 @@ simple_expression
       : getlocal    {$$ = $1;}
       | putobject   {$$ = $1;}
       | getconstant {$$ = $1;}
-      | simple_expression send {$$ = new rd_tree_node(COMP_STMT, $1, $2);}
+      /*
+      | simple_expression send argumentlist {$$ = new rd_tree_node(COMP_STMT, $3, $1, $2);}
+      | simple_expression send OPEN_PAR CLOSE_PAR {$$ = new rd_tree_node(COMP_STMT, NULL, $1, $2);}
+      */
+      | simple_expression send argumentlist {$$ = new rd_tree_node(COMP_STMT, $1, $2, $3);}
+      | simple_expression send OPEN_PAR CLOSE_PAR {$$ = new rd_tree_node(COMP_STMT, $1, $2);}
+      ;
+
+argumentlist
+      : arguments                    {$$ = new rd_tree_node(ARGUMENT_LIST, $1);}
+      | OPEN_PAR arguments CLOSE_PAR {$$ = new rd_tree_node(ARGUMENT_LIST, $2);}
+      ;
+arguments
+      : expression    {$$ = $1; _argc++;}
+      | arguments COMMA expression  {$$ = new rd_tree_node(ARGUMENT, $3, $1); _argc++;}
       ;
 
 send
-      : METHOD                      {$$ = new rd_tree_node(SEND_STMT); $$->constant = $1;}
+      : METHOD                      {$$ = new rd_tree_node(SEND_STMT); $$->constant = $1; $$->argc = _argc;}
       ;
 
 getconstant

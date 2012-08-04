@@ -8,7 +8,6 @@ enum rd_opcode  {
   OP_PUT_OBJ,       // put object
   OP_SET_LOCAL,     // set variable to top of stack
   OP_GET_LOCAL,     // get variable
-  OP_PUTS,
   OP_EQUAL,
   OP_JMPF,
   OP_JMPT,
@@ -33,8 +32,10 @@ public:
    int len();
 
    int       n;         // line number
-   char *constant = NULL;
-   VALUE *obj = NULL;
+   int       argc;
+   char      *constant = NULL;
+   VALUE     *obj = NULL;
+
    rd_opcode    opcode;    // the opcode
    rd_int_instr *target;    // jump target operand
    rd_int_instr *next;      // the next instruction

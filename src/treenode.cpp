@@ -11,7 +11,6 @@ char *name[] = {
   "setlocal",
   "getlocal",
   "putstring",
-  "puts",
   "putobject",
   "ifthen",
   "ifthenelse",
@@ -22,6 +21,8 @@ char *name[] = {
   "getconstant",
   "send",
   "compstmt",
+  "argumentlist",
+  "argument",
 };
 
 // Numbers of children per node type

@@ -3,13 +3,14 @@
 
 #include "vm.h"
 #include "rd_value.h"
+#include "object.h"
 
 extern rd_int_instr *intcode;
 extern std::vector<VALUE*> constants;
-extern VALUE *current_object;
 
 rd_vm::rd_vm() {
   sym_tab = new rd_sym_tab();
+  stack = rd_object_space::get()->get_stack();
 }
 
 rd_vm::~rd_vm() {
@@ -17,7 +18,7 @@ rd_vm::~rd_vm() {
 }
 
 void rd_vm::reset() {
-  stack.empty();
+  stack->empty();
 }
 
 
@@ -63,9 +64,6 @@ void rd_vm::compile() {
       case OP_GET_CONST:
         instr = rd_mk_instr(OP_GET_CONST, cinstr->constant);
         break;
-      case OP_PUTS:
-        instr = rd_mk_instr(OP_PUTS);
-        break;
       case OP_EQUAL:
         instr = rd_mk_instr(OP_EQUAL);
         break;
@@ -80,6 +78,7 @@ void rd_vm::compile() {
         break;
       case OP_SEND:
         instr = rd_mk_instr(OP_SEND, cinstr->constant);
+        instr->argc = cinstr->argc;
         break;
       case JUMPTARGET:
         instr = rd_mk_instr(OP_NOP, cinstr->n);
@@ -96,7 +95,7 @@ void rd_vm::compile() {
 
 void rd_vm::stat() {
   puts("== disasm: RadVM::InstructionSequence ==================");
-  printf("| instr. %-56ld |\n", instrs.size());
+  printf(" [ instr. %ld ] \n", instrs.size());
   intcode->show();
   puts("====");
 }
@@ -115,6 +114,7 @@ void rd_vm::execute() {
   for(auto instr : instrs) { instructions[tmpi] = instr; tmpi++;}
   rd_instr *instr;
 
+  PUSH_CURRENT_OBJ(rd_new_object());
   while(cip < ninstrs) {
     if(ip != 0) {
       cip = ip; ip = 0;
@@ -125,15 +125,14 @@ void rd_vm::execute() {
     switch(instr->opcode) {
       case OP_PUT_STR: case OP_PUT_OBJ:
         // Push value on stack
-        stack.push(instr->obj);
-        current_object = instr->obj;
+        stack->push(instr->obj);
         break;
       case OP_SET_LOCAL:
       {
         // Find variable
         rd_sym_desc *sd = sym_tab->find(instr->constant);
         // Pop stack
-        pval = stack.pop();
+        pval = stack->pop();
 
         if(sd == NULL) {
           // Undefined variable, create new
@@ -160,7 +159,7 @@ void rd_vm::execute() {
           val = t->val;
         }
 
-        stack.push(val);
+        stack->push(val);
 
         break;
       }
@@ -171,12 +170,7 @@ void rd_vm::execute() {
           printf("NameError: Uninitialized constant %s\n", instr->constant);
           exit(1);
         }
-        break;
-      }
-      case OP_PUTS:
-      {
-        pval = stack.pop();
-        std::cout << pval->send("to_s", 1, new VALUE())->str_val << std::endl;
+        ST_PUSH(constant);
 
         break;
       }
@@ -184,19 +178,23 @@ void rd_vm::execute() {
       {
         VALUE *lval, *rval;
 
-        lval = stack.pop(); rval = stack.pop();
+        lval = stack->pop(); rval = stack->pop();
         //std::cout << "lval: " << lval->to_s() << " rval " << rval->to_s() << std::endl;
         if(lval->type == T_NUMBER && rval->type == T_NUMBER) {
-          stack.push((lval->int_val == rval->int_val ? rd_true : rd_false));
+          stack->push((lval->int_val == rval->int_val ? rd_true : rd_false));
         } else {
-          stack.push(rd_false);
+          stack->push(rd_false);
         }
 
         break;
       }
       case OP_SEND:
       {
-        stack.push(current_object->send(instr->constant, 0));
+        pval = stack->pop();
+
+        VALUE *ret_value = pval->send(instr->constant, instr->argc);
+
+        stack->push(ret_value);
         break;
       }
       case OP_JMP:
@@ -206,7 +204,7 @@ void rd_vm::execute() {
       }
       case OP_JMPF:
       {
-        pval = stack.pop();
+        pval = stack->pop();
         if(pval == rd_false) {
           //printf("I need to jump to: %d\n", instr->target);
           ip = instr->target;
@@ -214,7 +212,7 @@ void rd_vm::execute() {
         break;
       }
       case OP_JMPT:
-        pval = stack.pop();
+        pval = stack->pop();
         if(pval == rd_true)
           ip = instr->target;
         break;

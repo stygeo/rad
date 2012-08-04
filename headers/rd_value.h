@@ -22,8 +22,9 @@ struct rd_method {
 
   const char *name;
   int argc;
-  VALUE *(*func)();
+  VALUE *(*func)(int argc);
   std::vector<rd_instr*> body;
+  VALUE *perform(int argc) { return func(argc); }
 };
 
 class VALUE {
@@ -36,7 +37,7 @@ class VALUE {
     VALUE *super;
 
     VALUE *send(char *method, int argc, ...);
-    void define_method(char *method, VALUE *(*func)(), int argc);
+    void define_method(char *method, VALUE *(*func)(int argc), int argc);
     void define_method(char *method, std::vector<rd_instr*> body, int argc);
 
     std::map<char *, rd_method*> methods;

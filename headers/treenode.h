@@ -12,7 +12,6 @@ enum rd_node_type {
   SET_LOCAL,
   GET_LOCAL,
   PUT_STR,
-  PUTS_STMT,
   PUT_OBJ,
   IFTHEN_STMT,
   IFTHENELSE_STMT,
@@ -23,6 +22,8 @@ enum rd_node_type {
   GET_CONST,
   SEND_STMT,
   COMP_STMT,
+  ARGUMENT_LIST,
+  ARGUMENT,
 };
 
 enum rd_data_type {
@@ -49,6 +50,7 @@ class rd_tree_node  {
 
     VALUE *obj;
     char *constant;
+    int argc;
     std::vector<rd_tree_node*>child;  // pointers to childen
     rd_data_type rettype;             // the 'return' type of this node
   private:

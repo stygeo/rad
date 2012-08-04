@@ -19,6 +19,7 @@ VALUE *rd_class;
 VALUE *rd_true;
 VALUE *rd_false;
 VALUE *rd_string;
+VALUE *rd_object;
 
 int errors = 0;
 void show_help() {
@@ -64,6 +65,7 @@ rd_int_instr *intcode;
 
 int main(int argc, char *argv[]) {
   init_rd_class();
+  init_rd_object();
   init_rd_number();
   init_rd_boolean();
   init_rd_string();

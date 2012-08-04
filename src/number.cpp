@@ -5,15 +5,15 @@
 #include "number.h"
 #include "class.h"
 #include "str.h"
+#include "object_space.h"
 
 extern VALUE *rd_class;
 extern VALUE *rd_number;
-extern VALUE *current_object;
 
-VALUE *number_to_s() {
+VALUE *number_to_s(int) {
   char *buff;
   buff = new char[50];
-  snprintf(buff, sizeof(buff), "%d", current_object->int_val);
+  snprintf(buff, sizeof(buff), "%d", CURRENT_OBJECT->int_val);
   return rd_new_string(buff);
 }
 

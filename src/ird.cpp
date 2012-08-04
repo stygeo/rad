@@ -7,6 +7,7 @@
 #include "parse.h"
 #include "vm.h"
 #include "config.h"
+#include "object_space.h"
 
 extern int errors;
 extern SyntTree tree;
@@ -19,7 +20,7 @@ bool check_quit(const char *buf);
 
 void *xmalloc(int);
 
-char *cmd[] ={"exit"};
+char *cmd[] = {"exit"};
 
 void init_ird(int argc, char *argv[]) {
   printf("Interactive Rad %d.%d.%d\n", RD_VER_MAJOR, RD_VER_MINOR, RD_VER_PATCH);
@@ -28,7 +29,10 @@ void init_ird(int argc, char *argv[]) {
   rl_attempted_completion_function = ird_completion;
   rd_vm vm;
 
-  while((buf = readline("\n rad > ")) != NULL) {
+  int count = 1;
+  char *prompt;
+  sprintf(prompt, "\nrad :%03d > ", count);
+  while((buf = readline(prompt)) != NULL) {
     rl_bind_key('\t', rl_complete);
     // Initialize a new temp buffer which adds a \n END_STMT to the end of the line.
     char *nbuf;
@@ -46,9 +50,14 @@ void init_ird(int argc, char *argv[]) {
         intcode->number(1);
 
         vm.compile();
+        vm.stat();
         vm.execute();
       }
+      printf(" => \"%s\"", CURRENT_OBJECT->send("to_s", 0)->str_val);
     }
+
+    count++;
+    sprintf(prompt, "\nrad :%03d > ", count);
   }
 
   free(buf);

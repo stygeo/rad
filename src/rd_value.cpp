@@ -1,12 +1,15 @@
 #include "rd_value.h"
 #include "globals.h"
-
-VALUE *current_object;
+#include "object_space.h"
 
 // Global object counter
 int _global_current_object_id = 0;
 int _new_object_id() {
   return _global_current_object_id++;
+}
+
+VALUE *return_new_value(int) {
+  return new VALUE(CURRENT_OBJECT);
 }
 
 VALUE::VALUE() : object_id(_new_object_id()) {
@@ -37,6 +40,8 @@ VALUE *rd_define_class(const char *name, VALUE *super) {
   val->type = T_CLASS;
   val->name = name;
 
+  val->define_method("new", return_new_value, 0);
+
   constants.push_back(val);
 
   return val;
@@ -48,14 +53,15 @@ VALUE::VALUE(const VALUE *val) : object_id(_new_object_id()) {
   methods = val->methods;
 }
 
-#define PUSH_CURRENT_OBJ(obj) \
-  VALUE *_prev_obj = current_object; \
-  current_object = obj;
-#define POP_CURRENT_OBJ current_object = _prev_obj;
-
 VALUE *VALUE::send(char *method, int argc, ...) {
   for(auto m : methods) {
     if(strcmp(m.first, method) == 0) {
+      if( m.second->argc != -1 && argc != m.second->argc ) {
+        printf("ArgumentError: wrong number of argumens (%d for %d)", argc, m.second->argc);
+        exit(1);
+      }
+
+      /*
       if(argc != 0) {
         va_list arg_list;
         va_start(arg_list, argc);
@@ -65,10 +71,11 @@ VALUE *VALUE::send(char *method, int argc, ...) {
         }
         va_end(arg_list);
       }
+      */
 
       PUSH_CURRENT_OBJ(this);  // Push this object as the current object
-        VALUE *ret = m.second->func();
-      POP_CURRENT_OBJ;         // Restore previous current object
+        VALUE *ret = m.second->perform(argc);
+      POP_CURRENT_OBJ();         // Restore previous current object
 
       return ret;
       // Push something to the stack
@@ -79,11 +86,12 @@ VALUE *VALUE::send(char *method, int argc, ...) {
   exit(1);
 }
 
-void VALUE::define_method(char *_method, VALUE *(*func)(), int argc) {
+void VALUE::define_method(char *_method, VALUE *(*func)(int argc), int argc) {
   rd_method *method = new rd_method();
   method->name = _method;
   method->type = T_C_FUNC;
   method->func = func;
+  method->argc = argc;
 
   methods[_method] = method;
 }
@@ -93,6 +101,7 @@ void VALUE::define_method(char *_method, std::vector<rd_instr*> body, int argc) 
   method->name = _method;
   method->type = T_R_FUNC;
   method->body = body;
+  method->argc = argc;
 
   methods[_method] = method;
 }

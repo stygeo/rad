@@ -41,29 +41,28 @@
      ERROR_TOKEN = 258,
      IF = 259,
      ELSE = 260,
-     PUTS = 261,
-     INPUT = 262,
-     ASSIGN = 263,
-     EQUAL = 264,
-     CONCAT = 265,
-     END_STMT = 266,
-     OPEN_PAR = 267,
-     CLOSE_PAR = 268,
-     BEGIN_CS = 269,
-     END_CS = 270,
-     DEF = 271,
-     THEN = 272,
-     END = 273,
-     COMMA = 274,
-     RETURN = 275,
-     WHILE = 276,
-     DOT = 277,
-     NEW = 278,
-     ID = 279,
-     STRING = 280,
-     METHOD = 281,
-     OBJECT = 282,
-     NUMBER = 283
+     INPUT = 261,
+     ASSIGN = 262,
+     EQUAL = 263,
+     CONCAT = 264,
+     END_STMT = 265,
+     OPEN_PAR = 266,
+     CLOSE_PAR = 267,
+     BEGIN_CS = 268,
+     END_CS = 269,
+     DEF = 270,
+     THEN = 271,
+     END = 272,
+     COMMA = 273,
+     RETURN = 274,
+     WHILE = 275,
+     DOT = 276,
+     NEW = 277,
+     ID = 278,
+     STRING = 279,
+     METHOD = 280,
+     OBJECT = 281,
+     NUMBER = 282
    };
 #endif
 
@@ -81,6 +80,7 @@
 #include "types.h"
 
 extern SyntTree tree;
+extern int _argc;
 
 // Yacc (bison) defines
 #define YYDEBUG 1       // Generate debug code; needed for YYERROR_VERBOSE
@@ -94,16 +94,17 @@ char *make_name();
 
 
 
+
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE 
-#line 31 "rules/rad.y"
+#line 33 "rules/rad.y"
 {
   char     *str;     // a char string
   int       num;     // a number
   rd_tree_node *tnode;   // node in the syntax tree
 }
 /* Line 2616 of glr.c.  */
-#line 107 "src/parser.hpp"
+#line 108 "src/parser.hpp"
 	YYSTYPE;
 # define YYSTYPE_IS_DECLARED 1
 # define YYSTYPE_IS_TRIVIAL 1
