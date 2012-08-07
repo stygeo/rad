@@ -24,7 +24,7 @@ struct rd_method {
   int argc;
   VALUE *(*func)(int argc);
   std::vector<rd_instr*> body;
-  VALUE *perform(int argc) { return func(argc); }
+  VALUE *perform(int argc);
 };
 
 class VALUE {

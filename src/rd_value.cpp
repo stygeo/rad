@@ -1,4 +1,5 @@
 #include "rd_value.h"
+#include "str.h"
 #include "globals.h"
 #include "object_space.h"
 
@@ -12,11 +13,19 @@ VALUE *return_new_value(int) {
   return new VALUE(CURRENT_OBJECT);
 }
 
+VALUE *default_to_s(int) {
+  return rd_new_string((char*)CURRENT_OBJECT->name);
+}
+
 VALUE::VALUE() : object_id(_new_object_id()) {
 }
 
 VALUE *rd_find_constant(const char *name) {
-  for(auto cnst : constants) {
+  //for(auto cnst : CONSTANTS) {
+  int const_size = CONSTANTS->len();
+
+  for(int i = 0; i < const_size; i++) {
+    VALUE *cnst = CONSTANTS->get_no(i);
     if(strcmp(cnst->name, name) == 0)
       return cnst;
   }
@@ -41,8 +50,9 @@ VALUE *rd_define_class(const char *name, VALUE *super) {
   val->name = name;
 
   val->define_method("new", return_new_value, 0);
+  val->define_method("to_s", default_to_s, 0);
 
-  constants.push_back(val);
+  ADD_CONST(val);
 
   return val;
 }
@@ -78,7 +88,6 @@ VALUE *VALUE::send(char *method, int argc, ...) {
       POP_CURRENT_OBJ();         // Restore previous current object
 
       return ret;
-      // Push something to the stack
     }
   }
 
@@ -105,3 +114,14 @@ void VALUE::define_method(char *_method, std::vector<rd_instr*> body, int argc) 
 
   methods[_method] = method;
 }
+
+VALUE *rd_method::perform(int argc) {
+  if(func != NULL) {
+    return func(argc);
+  } else if(body.size()) {
+    return rd_new_string("nil");
+  }
+
+  return rd_new_string("nil");
+}
+

@@ -31,7 +31,6 @@ void show_help() {
 
   printf("\n  %-20s print copyright\n", "--copyright");
   printf("  %-20s print version number\n", "--version");
-
 }
 
 void error(char *format, ...) {

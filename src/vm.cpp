@@ -4,9 +4,11 @@
 #include "vm.h"
 #include "rd_value.h"
 #include "object.h"
+#include "raise.h"
 
 extern rd_int_instr *intcode;
 extern std::vector<VALUE*> constants;
+extern rd_exception MethodError;
 
 rd_vm::rd_vm() {
   sym_tab = new rd_sym_tab();
@@ -20,7 +22,6 @@ rd_vm::~rd_vm() {
 void rd_vm::reset() {
   stack->empty();
 }
-
 
 rd_instr *rd_mk_instr(rd_opcode opcode, int target) {
   return new rd_instr(opcode, target);
@@ -80,8 +81,17 @@ void rd_vm::compile() {
         instr = rd_mk_instr(OP_SEND, cinstr->constant);
         instr->argc = cinstr->argc;
         break;
+      case OP_ARG:
+        instr = rd_mk_instr(OP_ARG);
+        break;
       case JUMPTARGET:
         instr = rd_mk_instr(OP_NOP, cinstr->n);
+        break;
+      case OP_CLASS_DEF:
+        instr = rd_mk_instr(OP_CLASS_DEF, cinstr->constant);
+        break;
+      case OP_METHOD_DEF:
+        instr = rd_mk_instr(OP_METHOD_DEF, cinstr->constant);
         break;
       default:
         instr = rd_mk_instr(OP_NOP);
@@ -115,6 +125,7 @@ void rd_vm::execute() {
   rd_instr *instr;
 
   PUSH_CURRENT_OBJ(rd_new_object());
+  stack->push(CURRENT_OBJECT);
   while(cip < ninstrs) {
     if(ip != 0) {
       cip = ip; ip = 0;
@@ -153,8 +164,7 @@ void rd_vm::execute() {
         VALUE *val;
 
         if(t == NULL) {
-          printf("Undefined variable or method: `%s' (NameError)\n", instr->constant);
-          exit(1);
+          rd_raise(MethodError, "Undefined variable or method: `%s' (NameError)\n", instr->constant);
         } else {
           val = t->val;
         }
@@ -167,8 +177,7 @@ void rd_vm::execute() {
       {
         VALUE *constant = rd_find_constant(instr->constant);
         if(constant == NULL) {
-          printf("NameError: Uninitialized constant %s\n", instr->constant);
-          exit(1);
+          rd_raise(MethodError, "NameError: Uninitialized constant %s\n", instr->constant);
         }
         ST_PUSH(constant);
 
@@ -190,7 +199,7 @@ void rd_vm::execute() {
       }
       case OP_SEND:
       {
-        pval = stack->pop();
+        pval = ST_POP();
 
         VALUE *ret_value = pval->send(instr->constant, instr->argc);
 
@@ -215,6 +224,15 @@ void rd_vm::execute() {
         pval = stack->pop();
         if(pval == rd_true)
           ip = instr->target;
+        break;
+      case OP_CLASS_DEF:
+      {
+        VALUE *class_def = rd_define_class(instr->constant);
+        PUSH_CURRENT_OBJ(class_def);
+        break;
+      }
+      case OP_METHOD_DEF:
+        CURRENT_OBJECT->define_method(instr->constant, NULL, 0);
         break;
     }
     pval = NULL;

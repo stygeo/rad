@@ -3,6 +3,9 @@
 #include "intcode.h"
 #include "rd_value.h"
 
+rd_int_instr *rd_mk_int_code(SyntTree);
+rd_int_instr *rd_mk_arg(rd_tree_node);
+
 // Number: assigns line numbers to this block of intermediate code, starting with ln
 void rd_int_instr::number(int ln)   {
   rd_int_instr *num = this;
@@ -21,32 +24,38 @@ int rd_int_instr::len() {
 char *op_name[] = {
   "nil", "putstring", "putobject", "setlocal",
   "getlocal", "opt_eq", "jumpunless",
-  "jumpif", "jump", "getconstant", "send",
+  "jumpif", "jump", "getconstant", "send", "arg",
+  "defclass", "send", 
 
   "jumptarget",
 };
 
 // show this block of intermediate code
 void rd_int_instr::show()   {
-  printf("%04d %-20s", n, op_name[opcode]);
-  switch(opcode) {
-    case OP_SEND:
-      printf(" [:%s, %d]", constant, argc);
-      break;
-    case OP_GET_LOCAL:
-      printf(" %s", constant);
-      break;
-    case OP_PUT_STR:
-      printf(" \"%s\"", obj->send("to_s", 0)->str_val);
-      break;
-    default:
-      if(constant) printf(" :%-32s ", constant);
-      if(obj)   printf(" %-20s (#%d) ", obj->send("to_s", 0)->str_val, obj->object_id);
-      if(target)   printf(" %-30d ", target->n);
-      if(!obj && !constant && !target) printf("%-34s ", "");
-      break;
+  if(opcode != OP_ARG) {
+    printf("%04d %-20s", n, op_name[opcode]);
+    switch(opcode) {
+      case OP_SEND:
+        printf(" :%s, %d", constant, argc);
+        break;
+      case OP_METHOD_DEF:
+        printf(" :define_method, :%s, %d", constant, argc);
+        break;
+      case OP_GET_LOCAL:
+        printf(" %s", constant);
+        break;
+      case OP_PUT_STR:
+        printf(" \"%s\"", obj->send("to_s", 0)->str_val);
+        break;
+      default:
+        if(constant) printf(" :%-32s ", constant);
+        if(obj)   printf(" %-20s (#%d) ", obj->send("to_s", 0)->str_val, obj->object_id);
+        if(target)   printf(" %-30d ", target->n);
+        if(!obj && !constant && !target) printf("%-34s ", "");
+        break;
+    }
+    printf("\n");
   }
-  printf("\n");
 
   if(next != NULL)   next->show();
 }
@@ -69,6 +78,10 @@ rd_int_instr *prefix_jt(rd_int_instr *blk, rd_int_instr *ref_instr)   {
    return jt;
 }
 
+rd_int_instr *rd_mk_arg(rd_tree_node *node) {
+  return concatenate(rd_mk_int_code(node), new rd_int_instr(OP_ARG));
+}
+
 int argc = 0;
 // Recursively generate intermediate code
 rd_int_instr *rd_mk_int_code(SyntTree tree)  {
@@ -76,22 +89,32 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
   rd_int_instr *blk1, *blk2,
                *cond, *jump2else, *thenpart, *jump2end, *elsepart, *endif,
                *jump2callee, *endfunc, *jump_return, *return_target, *end,
-               *begin, *jump2begin;
+               *begin, *jump2begin, *class_def, *method, *arguments;
 
   switch(root->type)  {
+    case CLASS_DEF:
+      class_def = new rd_int_instr(OP_CLASS_DEF, root->constant);
+      thenpart = rd_mk_int_code(root->child[0]);
+      return concatenate(class_def, thenpart);
+    case METHOD_DEF:
+      method = new rd_int_instr(OP_METHOD_DEF, root->constant);
+      thenpart = rd_mk_int_code(root->child[0]);
+      return concatenate(method, thenpart);
+
     case ARGUMENT_LIST:
     {
-      blk1 = rd_mk_int_code(root->child[0]);
+      blk1 = rd_mk_arg(root->child[0]);
       argc = 1;
       rd_int_instr *next = blk1;
       while( (next = next->next) != NULL ) {
         argc++;
       }
+      argc /= 2;
 
       return blk1;
     }
     case ARGUMENT:
-      blk1 = rd_mk_int_code(root->child[0]);
+      blk1 = rd_mk_arg(root->child[0]);
       if(root->child[1] != NULL) {
         blk2 = rd_mk_int_code(root->child[1]);
         return concatenate(blk1, blk2);
@@ -123,6 +146,15 @@ rd_int_instr *rd_mk_int_code(SyntTree tree)  {
       return new rd_int_instr(OP_PUT_OBJ, root->obj);
     case SEND_STMT:
     {
+      if(root->child[0] != NULL) {
+        cond = rd_mk_int_code(root->child[0]);
+        rd_int_instr *send = new rd_int_instr(OP_SEND, root->constant);
+        send->argc = argc;
+
+        // Reset argument count
+        argc = 0;
+        return concatenate(cond, send);
+      }
       rd_int_instr *send = new rd_int_instr(OP_SEND, root->constant);
       send->argc = argc;
 

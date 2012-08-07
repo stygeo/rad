@@ -8,7 +8,6 @@ Terminals which are not used
    ERROR_TOKEN
    INPUT
    CONCAT
-   DEF
    THEN
    END
    RETURN
@@ -18,14 +17,14 @@ Terminals which are not used
 
 Useless rules
 
-   34 block_start: if_statement
+   46 block_start: if_statement
 
 
-State 18 conflicts: 1 shift/reduce
+State 20 conflicts: 1 shift/reduce
+State 35 conflicts: 1 shift/reduce
 State 37 conflicts: 1 shift/reduce
-State 39 conflicts: 1 shift/reduce
-State 41 conflicts: 1 shift/reduce
-State 51 conflicts: 1 shift/reduce
+State 58 conflicts: 1 shift/reduce
+State 70 conflicts: 1 shift/reduce
 
 
 Grammar
@@ -38,49 +37,66 @@ Grammar
     3               | /* empty */
 
     4 statement: END_STMT
-    5          | head_expr if_statement
-    6          | head_expr END_STMT
-    7          | compound_statement
+    5          | class_def
+    6          | method_def
+    7          | head_expr if_statement
+    8          | head_expr END_STMT
+    9          | compound_statement
+   10          | method_call
 
-    8 head_expr: expression
+   11 head_expr: expression
 
-    9 if_statement: IF expression
+   12 if_statement: IF expression
 
-   10 compound_statement: IF expression statement_list optional_else_statement END_CS
-   11                   | WHILE expression statement_list END_CS
-   12                   | BEGIN_CS statement_list END_CS
+   13 compound_statement: IF expression statement_list optional_else_statement END_CS
+   14                   | WHILE expression statement_list END_CS
+   15                   | BEGIN_CS statement_list END_CS
 
-   13 optional_else_statement: ELSE statement_list
-   14                        | /* empty */
+   16 optional_else_statement: ELSE statement_list
+   17                        | /* empty */
 
-   15 expression: equal_expression
+   18 expression: equal_expression
 
-   16 equal_expression: expression EQUAL expression
-   17                 | assign_expression
+   19 equal_expression: expression EQUAL expression
+   20                 | assign_expression
 
-   18 assign_expression: ID ASSIGN assign_expression
-   19                  | simple_expression
+   21 assign_expression: ID ASSIGN assign_expression
+   22                  | simple_expression
 
-   20 simple_expression: getlocal
-   21                  | putobject
-   22                  | getconstant
-   23                  | simple_expression send argumentlist
-   24                  | simple_expression send OPEN_PAR CLOSE_PAR
+   23 simple_expression: getlocal
+   24                  | putobject
+   25                  | getconstant
+   26                  | simple_expression send OPEN_PAR CLOSE_PAR
+   27                  | simple_expression send argumentlist
 
-   25 argumentlist: arguments
-   26             | OPEN_PAR arguments CLOSE_PAR
+   28 argumentlist: arguments
+   29             | OPEN_PAR arguments CLOSE_PAR
 
-   27 arguments: expression
-   28          | arguments COMMA expression
+   30 arguments: expression
+   31          | arguments COMMA expression
 
-   29 send: METHOD
+   32 method_call: ID OPEN_PAR CLOSE_PAR
+   33            | ID argumentlist
 
-   30 getconstant: OBJECT
+   34 send: METHOD
 
-   31 putobject: NUMBER
-   32          | STRING
+   35 class_def: CLASS OBJECT statement_list END_CS
 
-   33 getlocal: ID
+   36 method_def: DEF ID argument_def_list statement_list END_CS
+
+   37 argument_def_list: argument_def
+   38                  | OPEN_PAR argument_def CLOSE_PAR
+   39                  | OPEN_PAR CLOSE_PAR
+
+   40 argument_def: getlocal
+   41             | argument_def COMMA getlocal
+
+   42 getconstant: OBJECT
+
+   43 putobject: NUMBER
+   44          | STRING
+
+   45 getlocal: ID
 
 
 Terminals, with rules where they appear
@@ -88,70 +104,81 @@ Terminals, with rules where they appear
 $end (0) 0
 error (256)
 ERROR_TOKEN (258)
-IF (259) 9 10
-ELSE (260) 13
+IF (259) 12 13
+ELSE (260) 16
 INPUT (261)
-ASSIGN (262) 18
-EQUAL (263) 16
-CONCAT (264)
-END_STMT (265) 4 6
-OPEN_PAR (266) 24 26
-CLOSE_PAR (267) 24 26
-BEGIN_CS (268) 12
-END_CS (269) 10 11 12
-DEF (270)
-THEN (271)
-END (272)
-COMMA (273) 28
-RETURN (274)
-WHILE (275) 11
-DOT (276)
-NEW (277)
-ID (278) 18 33
-STRING (279) 32
-METHOD (280) 29
-OBJECT (281) 30
-NUMBER (282) 31
+ASSIGN (262) 21
+EQUAL (263) 19
+CLASS (264) 35
+CONCAT (265)
+END_STMT (266) 4 8
+OPEN_PAR (267) 26 29 32 38 39
+CLOSE_PAR (268) 26 29 32 38 39
+BEGIN_CS (269) 15
+END_CS (270) 13 14 15 35 36
+DEF (271) 36
+THEN (272)
+END (273)
+COMMA (274) 31 41
+RETURN (275)
+WHILE (276) 14
+DOT (277)
+NEW (278)
+ID (279) 21 32 33 36 45
+STRING (280) 44
+METHOD (281) 34
+OBJECT (282) 35 42
+NUMBER (283) 43
 
 
 Nonterminals, with rules where they appear
 
-$accept (28)
+$accept (29)
     on left: 0
-program (29)
+program (30)
     on left: 1, on right: 0
-statement_list (30)
-    on left: 2 3, on right: 1 2 10 11 12 13
-statement (31)
-    on left: 4 5 6 7, on right: 2
-head_expr (32)
-    on left: 8, on right: 5 6
-if_statement (33)
-    on left: 9, on right: 5
-compound_statement (34)
-    on left: 10 11 12, on right: 7
-optional_else_statement (35)
-    on left: 13 14, on right: 10
-expression (36)
-    on left: 15, on right: 8 9 10 11 16 27 28
-equal_expression (37)
-    on left: 16 17, on right: 15
-assign_expression (38)
-    on left: 18 19, on right: 17 18
-simple_expression (39)
-    on left: 20 21 22 23 24, on right: 19 23 24
-argumentlist (40)
-    on left: 25 26, on right: 23
-arguments (41)
-    on left: 27 28, on right: 25 26 28
-send (42)
-    on left: 29, on right: 23 24
-getconstant (43)
-    on left: 30, on right: 22
-putobject (44)
-    on left: 31 32, on right: 21
-getlocal (45)
-    on left: 33, on right: 20
+statement_list (31)
+    on left: 2 3, on right: 1 2 13 14 15 16 35 36
+statement (32)
+    on left: 4 5 6 7 8 9 10, on right: 2
+head_expr (33)
+    on left: 11, on right: 7 8
+if_statement (34)
+    on left: 12, on right: 7
+compound_statement (35)
+    on left: 13 14 15, on right: 9
+optional_else_statement (36)
+    on left: 16 17, on right: 13
+expression (37)
+    on left: 18, on right: 11 12 13 14 19 30 31
+equal_expression (38)
+    on left: 19 20, on right: 18
+assign_expression (39)
+    on left: 21 22, on right: 20 21
+simple_expression (40)
+    on left: 23 24 25 26 27, on right: 22 26 27
+argumentlist (41)
+    on left: 28 29, on right: 27 33
+arguments (42)
+    on left: 30 31, on right: 28 29 31
+method_call (43)
+    on left: 32 33, on right: 10
+send (44)
+    on left: 34, on right: 26 27
+class_def (45)
+    on left: 35, on right: 5
+method_def (46)
+    on left: 36, on right: 6
+argument_def_list (47)
+    on left: 37 38 39, on right: 36
+argument_def (48)
+    on left: 40 41, on right: 37 38 41
+getconstant (49)
+    on left: 42, on right: 25
+putobject (50)
+    on left: 43 44, on right: 24
+getlocal (51)
+    on left: 45, on right: 23 40 41
 
 
 state 0
@@ -177,26 +204,31 @@ state 2
     2 statement_list: statement_list . statement
 
     IF        shift, and go to state 4
-    END_STMT  shift, and go to state 5
-    BEGIN_CS  shift, and go to state 6
-    WHILE     shift, and go to state 7
-    ID        shift, and go to state 8
-    STRING    shift, and go to state 9
-    OBJECT    shift, and go to state 10
-    NUMBER    shift, and go to state 11
+    CLASS     shift, and go to state 5
+    END_STMT  shift, and go to state 6
+    BEGIN_CS  shift, and go to state 7
+    DEF       shift, and go to state 8
+    WHILE     shift, and go to state 9
+    ID        shift, and go to state 10
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
 
     $default  reduce using rule 1 (program)
 
-    statement           go to state 12
-    head_expr           go to state 13
-    compound_statement  go to state 14
-    expression          go to state 15
-    equal_expression    go to state 16
-    assign_expression   go to state 17
-    simple_expression   go to state 18
-    getconstant         go to state 19
-    putobject           go to state 20
-    getlocal            go to state 21
+    statement           go to state 14
+    head_expr           go to state 15
+    compound_statement  go to state 16
+    expression          go to state 17
+    equal_expression    go to state 18
+    assign_expression   go to state 19
+    simple_expression   go to state 20
+    method_call         go to state 21
+    class_def           go to state 22
+    method_def          go to state 23
+    getconstant         go to state 24
+    putobject           go to state 25
+    getlocal            go to state 26
 
 
 state 3
@@ -208,564 +240,864 @@ state 3
 
 state 4
 
-   10 compound_statement: IF . expression statement_list optional_else_statement END_CS
+   13 compound_statement: IF . expression statement_list optional_else_statement END_CS
 
-    ID      shift, and go to state 8
-    STRING  shift, and go to state 9
-    OBJECT  shift, and go to state 10
-    NUMBER  shift, and go to state 11
+    ID      shift, and go to state 27
+    STRING  shift, and go to state 11
+    OBJECT  shift, and go to state 12
+    NUMBER  shift, and go to state 13
 
-    expression         go to state 22
-    equal_expression   go to state 16
-    assign_expression  go to state 17
-    simple_expression  go to state 18
-    getconstant        go to state 19
-    putobject          go to state 20
-    getlocal           go to state 21
+    expression         go to state 28
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
 
 
 state 5
+
+   35 class_def: CLASS . OBJECT statement_list END_CS
+
+    OBJECT  shift, and go to state 29
+
+
+state 6
 
     4 statement: END_STMT .
 
     $default  reduce using rule 4 (statement)
 
 
-state 6
+state 7
 
-   12 compound_statement: BEGIN_CS . statement_list END_CS
+   15 compound_statement: BEGIN_CS . statement_list END_CS
 
     $default  reduce using rule 3 (statement_list)
 
-    statement_list  go to state 23
-
-
-state 7
-
-   11 compound_statement: WHILE . expression statement_list END_CS
-
-    ID      shift, and go to state 8
-    STRING  shift, and go to state 9
-    OBJECT  shift, and go to state 10
-    NUMBER  shift, and go to state 11
-
-    expression         go to state 24
-    equal_expression   go to state 16
-    assign_expression  go to state 17
-    simple_expression  go to state 18
-    getconstant        go to state 19
-    putobject          go to state 20
-    getlocal           go to state 21
+    statement_list  go to state 30
 
 
 state 8
 
-   18 assign_expression: ID . ASSIGN assign_expression
-   33 getlocal: ID .
+   36 method_def: DEF . ID argument_def_list statement_list END_CS
 
-    ASSIGN  shift, and go to state 25
-
-    $default  reduce using rule 33 (getlocal)
+    ID  shift, and go to state 31
 
 
 state 9
 
-   32 putobject: STRING .
+   14 compound_statement: WHILE . expression statement_list END_CS
 
-    $default  reduce using rule 32 (putobject)
+    ID      shift, and go to state 27
+    STRING  shift, and go to state 11
+    OBJECT  shift, and go to state 12
+    NUMBER  shift, and go to state 13
+
+    expression         go to state 32
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
 
 
 state 10
 
-   30 getconstant: OBJECT .
+   21 assign_expression: ID . ASSIGN assign_expression
+   32 method_call: ID . OPEN_PAR CLOSE_PAR
+   33            | ID . argumentlist
+   45 getlocal: ID .
 
-    $default  reduce using rule 30 (getconstant)
+    ASSIGN    shift, and go to state 33
+    OPEN_PAR  shift, and go to state 34
+    ID        shift, and go to state 27
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
+
+    $default  reduce using rule 45 (getlocal)
+
+    expression         go to state 35
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    argumentlist       go to state 36
+    arguments          go to state 37
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
 
 
 state 11
 
-   31 putobject: NUMBER .
+   44 putobject: STRING .
 
-    $default  reduce using rule 31 (putobject)
+    $default  reduce using rule 44 (putobject)
 
 
 state 12
+
+   42 getconstant: OBJECT .
+
+    $default  reduce using rule 42 (getconstant)
+
+
+state 13
+
+   43 putobject: NUMBER .
+
+    $default  reduce using rule 43 (putobject)
+
+
+state 14
 
     2 statement_list: statement_list statement .
 
     $default  reduce using rule 2 (statement_list)
 
 
-state 13
-
-    5 statement: head_expr . if_statement
-    6          | head_expr . END_STMT
-
-    IF        shift, and go to state 26
-    END_STMT  shift, and go to state 27
-
-    if_statement  go to state 28
-
-
-state 14
-
-    7 statement: compound_statement .
-
-    $default  reduce using rule 7 (statement)
-
-
 state 15
 
-    8 head_expr: expression .
-   16 equal_expression: expression . EQUAL expression
+    7 statement: head_expr . if_statement
+    8          | head_expr . END_STMT
 
-    EQUAL  shift, and go to state 29
+    IF        shift, and go to state 38
+    END_STMT  shift, and go to state 39
 
-    $default  reduce using rule 8 (head_expr)
+    if_statement  go to state 40
 
 
 state 16
 
-   15 expression: equal_expression .
+    9 statement: compound_statement .
 
-    $default  reduce using rule 15 (expression)
+    $default  reduce using rule 9 (statement)
 
 
 state 17
 
-   17 equal_expression: assign_expression .
+   11 head_expr: expression .
+   19 equal_expression: expression . EQUAL expression
 
-    $default  reduce using rule 17 (equal_expression)
+    EQUAL  shift, and go to state 41
+
+    $default  reduce using rule 11 (head_expr)
 
 
 state 18
 
-   19 assign_expression: simple_expression .
-   23 simple_expression: simple_expression . send argumentlist
-   24                  | simple_expression . send OPEN_PAR CLOSE_PAR
+   18 expression: equal_expression .
 
-    METHOD  shift, and go to state 30
-
-    METHOD    [reduce using rule 19 (assign_expression)]
-    $default  reduce using rule 19 (assign_expression)
-
-    send  go to state 31
+    $default  reduce using rule 18 (expression)
 
 
 state 19
 
-   22 simple_expression: getconstant .
+   20 equal_expression: assign_expression .
 
-    $default  reduce using rule 22 (simple_expression)
+    $default  reduce using rule 20 (equal_expression)
 
 
 state 20
 
-   21 simple_expression: putobject .
+   22 assign_expression: simple_expression .
+   26 simple_expression: simple_expression . send OPEN_PAR CLOSE_PAR
+   27                  | simple_expression . send argumentlist
 
-    $default  reduce using rule 21 (simple_expression)
+    METHOD  shift, and go to state 42
+
+    METHOD    [reduce using rule 22 (assign_expression)]
+    $default  reduce using rule 22 (assign_expression)
+
+    send  go to state 43
 
 
 state 21
 
-   20 simple_expression: getlocal .
+   10 statement: method_call .
 
-    $default  reduce using rule 20 (simple_expression)
+    $default  reduce using rule 10 (statement)
 
 
 state 22
 
-   10 compound_statement: IF expression . statement_list optional_else_statement END_CS
-   16 equal_expression: expression . EQUAL expression
-
-    EQUAL  shift, and go to state 29
-
-    $default  reduce using rule 3 (statement_list)
-
-    statement_list  go to state 32
-
-
-state 23
-
-    2 statement_list: statement_list . statement
-   12 compound_statement: BEGIN_CS statement_list . END_CS
-
-    IF        shift, and go to state 4
-    END_STMT  shift, and go to state 5
-    BEGIN_CS  shift, and go to state 6
-    END_CS    shift, and go to state 33
-    WHILE     shift, and go to state 7
-    ID        shift, and go to state 8
-    STRING    shift, and go to state 9
-    OBJECT    shift, and go to state 10
-    NUMBER    shift, and go to state 11
-
-    statement           go to state 12
-    head_expr           go to state 13
-    compound_statement  go to state 14
-    expression          go to state 15
-    equal_expression    go to state 16
-    assign_expression   go to state 17
-    simple_expression   go to state 18
-    getconstant         go to state 19
-    putobject           go to state 20
-    getlocal            go to state 21
-
-
-state 24
-
-   11 compound_statement: WHILE expression . statement_list END_CS
-   16 equal_expression: expression . EQUAL expression
-
-    EQUAL  shift, and go to state 29
-
-    $default  reduce using rule 3 (statement_list)
-
-    statement_list  go to state 34
-
-
-state 25
-
-   18 assign_expression: ID ASSIGN . assign_expression
-
-    ID      shift, and go to state 8
-    STRING  shift, and go to state 9
-    OBJECT  shift, and go to state 10
-    NUMBER  shift, and go to state 11
-
-    assign_expression  go to state 35
-    simple_expression  go to state 18
-    getconstant        go to state 19
-    putobject          go to state 20
-    getlocal           go to state 21
-
-
-state 26
-
-    9 if_statement: IF . expression
-
-    ID      shift, and go to state 8
-    STRING  shift, and go to state 9
-    OBJECT  shift, and go to state 10
-    NUMBER  shift, and go to state 11
-
-    expression         go to state 36
-    equal_expression   go to state 16
-    assign_expression  go to state 17
-    simple_expression  go to state 18
-    getconstant        go to state 19
-    putobject          go to state 20
-    getlocal           go to state 21
-
-
-state 27
-
-    6 statement: head_expr END_STMT .
-
-    $default  reduce using rule 6 (statement)
-
-
-state 28
-
-    5 statement: head_expr if_statement .
+    5 statement: class_def .
 
     $default  reduce using rule 5 (statement)
 
 
-state 29
+state 23
 
-   16 equal_expression: expression EQUAL . expression
+    6 statement: method_def .
 
-    ID      shift, and go to state 8
-    STRING  shift, and go to state 9
-    OBJECT  shift, and go to state 10
-    NUMBER  shift, and go to state 11
+    $default  reduce using rule 6 (statement)
 
-    expression         go to state 37
-    equal_expression   go to state 16
-    assign_expression  go to state 17
-    simple_expression  go to state 18
-    getconstant        go to state 19
-    putobject          go to state 20
-    getlocal           go to state 21
 
+state 24
 
-state 30
+   25 simple_expression: getconstant .
 
-   29 send: METHOD .
+    $default  reduce using rule 25 (simple_expression)
 
-    $default  reduce using rule 29 (send)
 
+state 25
 
-state 31
-
-   23 simple_expression: simple_expression send . argumentlist
-   24                  | simple_expression send . OPEN_PAR CLOSE_PAR
-
-    OPEN_PAR  shift, and go to state 38
-    ID        shift, and go to state 8
-    STRING    shift, and go to state 9
-    OBJECT    shift, and go to state 10
-    NUMBER    shift, and go to state 11
-
-    expression         go to state 39
-    equal_expression   go to state 16
-    assign_expression  go to state 17
-    simple_expression  go to state 18
-    argumentlist       go to state 40
-    arguments          go to state 41
-    getconstant        go to state 19
-    putobject          go to state 20
-    getlocal           go to state 21
-
-
-state 32
-
-    2 statement_list: statement_list . statement
-   10 compound_statement: IF expression statement_list . optional_else_statement END_CS
-
-    IF        shift, and go to state 4
-    ELSE      shift, and go to state 42
-    END_STMT  shift, and go to state 5
-    BEGIN_CS  shift, and go to state 6
-    WHILE     shift, and go to state 7
-    ID        shift, and go to state 8
-    STRING    shift, and go to state 9
-    OBJECT    shift, and go to state 10
-    NUMBER    shift, and go to state 11
-
-    $default  reduce using rule 14 (optional_else_statement)
-
-    statement                go to state 12
-    head_expr                go to state 13
-    compound_statement       go to state 14
-    optional_else_statement  go to state 43
-    expression               go to state 15
-    equal_expression         go to state 16
-    assign_expression        go to state 17
-    simple_expression        go to state 18
-    getconstant              go to state 19
-    putobject                go to state 20
-    getlocal                 go to state 21
-
-
-state 33
-
-   12 compound_statement: BEGIN_CS statement_list END_CS .
-
-    $default  reduce using rule 12 (compound_statement)
-
-
-state 34
-
-    2 statement_list: statement_list . statement
-   11 compound_statement: WHILE expression statement_list . END_CS
-
-    IF        shift, and go to state 4
-    END_STMT  shift, and go to state 5
-    BEGIN_CS  shift, and go to state 6
-    END_CS    shift, and go to state 44
-    WHILE     shift, and go to state 7
-    ID        shift, and go to state 8
-    STRING    shift, and go to state 9
-    OBJECT    shift, and go to state 10
-    NUMBER    shift, and go to state 11
-
-    statement           go to state 12
-    head_expr           go to state 13
-    compound_statement  go to state 14
-    expression          go to state 15
-    equal_expression    go to state 16
-    assign_expression   go to state 17
-    simple_expression   go to state 18
-    getconstant         go to state 19
-    putobject           go to state 20
-    getlocal            go to state 21
-
-
-state 35
-
-   18 assign_expression: ID ASSIGN assign_expression .
-
-    $default  reduce using rule 18 (assign_expression)
-
-
-state 36
-
-    9 if_statement: IF expression .
-   16 equal_expression: expression . EQUAL expression
-
-    EQUAL  shift, and go to state 29
-
-    $default  reduce using rule 9 (if_statement)
-
-
-state 37
-
-   16 equal_expression: expression . EQUAL expression
-   16                 | expression EQUAL expression .
-
-    EQUAL  shift, and go to state 29
-
-    EQUAL     [reduce using rule 16 (equal_expression)]
-    $default  reduce using rule 16 (equal_expression)
-
-
-state 38
-
-   24 simple_expression: simple_expression send OPEN_PAR . CLOSE_PAR
-   26 argumentlist: OPEN_PAR . arguments CLOSE_PAR
-
-    CLOSE_PAR  shift, and go to state 45
-    ID         shift, and go to state 8
-    STRING     shift, and go to state 9
-    OBJECT     shift, and go to state 10
-    NUMBER     shift, and go to state 11
-
-    expression         go to state 39
-    equal_expression   go to state 16
-    assign_expression  go to state 17
-    simple_expression  go to state 18
-    arguments          go to state 46
-    getconstant        go to state 19
-    putobject          go to state 20
-    getlocal           go to state 21
-
-
-state 39
-
-   16 equal_expression: expression . EQUAL expression
-   27 arguments: expression .
-
-    EQUAL  shift, and go to state 29
-
-    EQUAL     [reduce using rule 27 (arguments)]
-    $default  reduce using rule 27 (arguments)
-
-
-state 40
-
-   23 simple_expression: simple_expression send argumentlist .
-
-    $default  reduce using rule 23 (simple_expression)
-
-
-state 41
-
-   25 argumentlist: arguments .
-   28 arguments: arguments . COMMA expression
-
-    COMMA  shift, and go to state 47
-
-    COMMA     [reduce using rule 25 (argumentlist)]
-    $default  reduce using rule 25 (argumentlist)
-
-
-state 42
-
-   13 optional_else_statement: ELSE . statement_list
-
-    $default  reduce using rule 3 (statement_list)
-
-    statement_list  go to state 48
-
-
-state 43
-
-   10 compound_statement: IF expression statement_list optional_else_statement . END_CS
-
-    END_CS  shift, and go to state 49
-
-
-state 44
-
-   11 compound_statement: WHILE expression statement_list END_CS .
-
-    $default  reduce using rule 11 (compound_statement)
-
-
-state 45
-
-   24 simple_expression: simple_expression send OPEN_PAR CLOSE_PAR .
+   24 simple_expression: putobject .
 
     $default  reduce using rule 24 (simple_expression)
 
 
+state 26
+
+   23 simple_expression: getlocal .
+
+    $default  reduce using rule 23 (simple_expression)
+
+
+state 27
+
+   21 assign_expression: ID . ASSIGN assign_expression
+   45 getlocal: ID .
+
+    ASSIGN  shift, and go to state 33
+
+    $default  reduce using rule 45 (getlocal)
+
+
+state 28
+
+   13 compound_statement: IF expression . statement_list optional_else_statement END_CS
+   19 equal_expression: expression . EQUAL expression
+
+    EQUAL  shift, and go to state 41
+
+    $default  reduce using rule 3 (statement_list)
+
+    statement_list  go to state 44
+
+
+state 29
+
+   35 class_def: CLASS OBJECT . statement_list END_CS
+
+    $default  reduce using rule 3 (statement_list)
+
+    statement_list  go to state 45
+
+
+state 30
+
+    2 statement_list: statement_list . statement
+   15 compound_statement: BEGIN_CS statement_list . END_CS
+
+    IF        shift, and go to state 4
+    CLASS     shift, and go to state 5
+    END_STMT  shift, and go to state 6
+    BEGIN_CS  shift, and go to state 7
+    END_CS    shift, and go to state 46
+    DEF       shift, and go to state 8
+    WHILE     shift, and go to state 9
+    ID        shift, and go to state 10
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
+
+    statement           go to state 14
+    head_expr           go to state 15
+    compound_statement  go to state 16
+    expression          go to state 17
+    equal_expression    go to state 18
+    assign_expression   go to state 19
+    simple_expression   go to state 20
+    method_call         go to state 21
+    class_def           go to state 22
+    method_def          go to state 23
+    getconstant         go to state 24
+    putobject           go to state 25
+    getlocal            go to state 26
+
+
+state 31
+
+   36 method_def: DEF ID . argument_def_list statement_list END_CS
+
+    OPEN_PAR  shift, and go to state 47
+    ID        shift, and go to state 48
+
+    argument_def_list  go to state 49
+    argument_def       go to state 50
+    getlocal           go to state 51
+
+
+state 32
+
+   14 compound_statement: WHILE expression . statement_list END_CS
+   19 equal_expression: expression . EQUAL expression
+
+    EQUAL  shift, and go to state 41
+
+    $default  reduce using rule 3 (statement_list)
+
+    statement_list  go to state 52
+
+
+state 33
+
+   21 assign_expression: ID ASSIGN . assign_expression
+
+    ID      shift, and go to state 27
+    STRING  shift, and go to state 11
+    OBJECT  shift, and go to state 12
+    NUMBER  shift, and go to state 13
+
+    assign_expression  go to state 53
+    simple_expression  go to state 20
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
+
+
+state 34
+
+   29 argumentlist: OPEN_PAR . arguments CLOSE_PAR
+   32 method_call: ID OPEN_PAR . CLOSE_PAR
+
+    CLOSE_PAR  shift, and go to state 54
+    ID         shift, and go to state 27
+    STRING     shift, and go to state 11
+    OBJECT     shift, and go to state 12
+    NUMBER     shift, and go to state 13
+
+    expression         go to state 35
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    arguments          go to state 55
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
+
+
+state 35
+
+   19 equal_expression: expression . EQUAL expression
+   30 arguments: expression .
+
+    EQUAL  shift, and go to state 41
+
+    EQUAL     [reduce using rule 30 (arguments)]
+    $default  reduce using rule 30 (arguments)
+
+
+state 36
+
+   33 method_call: ID argumentlist .
+
+    $default  reduce using rule 33 (method_call)
+
+
+state 37
+
+   28 argumentlist: arguments .
+   31 arguments: arguments . COMMA expression
+
+    COMMA  shift, and go to state 56
+
+    COMMA     [reduce using rule 28 (argumentlist)]
+    $default  reduce using rule 28 (argumentlist)
+
+
+state 38
+
+   12 if_statement: IF . expression
+
+    ID      shift, and go to state 27
+    STRING  shift, and go to state 11
+    OBJECT  shift, and go to state 12
+    NUMBER  shift, and go to state 13
+
+    expression         go to state 57
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
+
+
+state 39
+
+    8 statement: head_expr END_STMT .
+
+    $default  reduce using rule 8 (statement)
+
+
+state 40
+
+    7 statement: head_expr if_statement .
+
+    $default  reduce using rule 7 (statement)
+
+
+state 41
+
+   19 equal_expression: expression EQUAL . expression
+
+    ID      shift, and go to state 27
+    STRING  shift, and go to state 11
+    OBJECT  shift, and go to state 12
+    NUMBER  shift, and go to state 13
+
+    expression         go to state 58
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
+
+
+state 42
+
+   34 send: METHOD .
+
+    $default  reduce using rule 34 (send)
+
+
+state 43
+
+   26 simple_expression: simple_expression send . OPEN_PAR CLOSE_PAR
+   27                  | simple_expression send . argumentlist
+
+    OPEN_PAR  shift, and go to state 59
+    ID        shift, and go to state 27
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
+
+    expression         go to state 35
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    argumentlist       go to state 60
+    arguments          go to state 37
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
+
+
+state 44
+
+    2 statement_list: statement_list . statement
+   13 compound_statement: IF expression statement_list . optional_else_statement END_CS
+
+    IF        shift, and go to state 4
+    ELSE      shift, and go to state 61
+    CLASS     shift, and go to state 5
+    END_STMT  shift, and go to state 6
+    BEGIN_CS  shift, and go to state 7
+    DEF       shift, and go to state 8
+    WHILE     shift, and go to state 9
+    ID        shift, and go to state 10
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
+
+    $default  reduce using rule 17 (optional_else_statement)
+
+    statement                go to state 14
+    head_expr                go to state 15
+    compound_statement       go to state 16
+    optional_else_statement  go to state 62
+    expression               go to state 17
+    equal_expression         go to state 18
+    assign_expression        go to state 19
+    simple_expression        go to state 20
+    method_call              go to state 21
+    class_def                go to state 22
+    method_def               go to state 23
+    getconstant              go to state 24
+    putobject                go to state 25
+    getlocal                 go to state 26
+
+
+state 45
+
+    2 statement_list: statement_list . statement
+   35 class_def: CLASS OBJECT statement_list . END_CS
+
+    IF        shift, and go to state 4
+    CLASS     shift, and go to state 5
+    END_STMT  shift, and go to state 6
+    BEGIN_CS  shift, and go to state 7
+    END_CS    shift, and go to state 63
+    DEF       shift, and go to state 8
+    WHILE     shift, and go to state 9
+    ID        shift, and go to state 10
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
+
+    statement           go to state 14
+    head_expr           go to state 15
+    compound_statement  go to state 16
+    expression          go to state 17
+    equal_expression    go to state 18
+    assign_expression   go to state 19
+    simple_expression   go to state 20
+    method_call         go to state 21
+    class_def           go to state 22
+    method_def          go to state 23
+    getconstant         go to state 24
+    putobject           go to state 25
+    getlocal            go to state 26
+
+
 state 46
 
-   26 argumentlist: OPEN_PAR arguments . CLOSE_PAR
-   28 arguments: arguments . COMMA expression
+   15 compound_statement: BEGIN_CS statement_list END_CS .
 
-    CLOSE_PAR  shift, and go to state 50
-    COMMA      shift, and go to state 47
+    $default  reduce using rule 15 (compound_statement)
 
 
 state 47
 
-   28 arguments: arguments COMMA . expression
+   38 argument_def_list: OPEN_PAR . argument_def CLOSE_PAR
+   39                  | OPEN_PAR . CLOSE_PAR
 
-    ID      shift, and go to state 8
-    STRING  shift, and go to state 9
-    OBJECT  shift, and go to state 10
-    NUMBER  shift, and go to state 11
+    CLOSE_PAR  shift, and go to state 64
+    ID         shift, and go to state 48
 
-    expression         go to state 51
-    equal_expression   go to state 16
-    assign_expression  go to state 17
-    simple_expression  go to state 18
-    getconstant        go to state 19
-    putobject          go to state 20
-    getlocal           go to state 21
+    argument_def  go to state 65
+    getlocal      go to state 51
 
 
 state 48
 
-    2 statement_list: statement_list . statement
-   13 optional_else_statement: ELSE statement_list .
+   45 getlocal: ID .
 
-    IF        shift, and go to state 4
-    END_STMT  shift, and go to state 5
-    BEGIN_CS  shift, and go to state 6
-    WHILE     shift, and go to state 7
-    ID        shift, and go to state 8
-    STRING    shift, and go to state 9
-    OBJECT    shift, and go to state 10
-    NUMBER    shift, and go to state 11
-
-    $default  reduce using rule 13 (optional_else_statement)
-
-    statement           go to state 12
-    head_expr           go to state 13
-    compound_statement  go to state 14
-    expression          go to state 15
-    equal_expression    go to state 16
-    assign_expression   go to state 17
-    simple_expression   go to state 18
-    getconstant         go to state 19
-    putobject           go to state 20
-    getlocal            go to state 21
+    $default  reduce using rule 45 (getlocal)
 
 
 state 49
 
-   10 compound_statement: IF expression statement_list optional_else_statement END_CS .
+   36 method_def: DEF ID argument_def_list . statement_list END_CS
 
-    $default  reduce using rule 10 (compound_statement)
+    $default  reduce using rule 3 (statement_list)
+
+    statement_list  go to state 66
 
 
 state 50
 
-   26 argumentlist: OPEN_PAR arguments CLOSE_PAR .
+   37 argument_def_list: argument_def .
+   41 argument_def: argument_def . COMMA getlocal
 
-    $default  reduce using rule 26 (argumentlist)
+    COMMA  shift, and go to state 67
+
+    $default  reduce using rule 37 (argument_def_list)
 
 
 state 51
 
-   16 equal_expression: expression . EQUAL expression
-   28 arguments: arguments COMMA expression .
+   40 argument_def: getlocal .
 
-    EQUAL  shift, and go to state 29
+    $default  reduce using rule 40 (argument_def)
 
-    EQUAL     [reduce using rule 28 (arguments)]
-    $default  reduce using rule 28 (arguments)
+
+state 52
+
+    2 statement_list: statement_list . statement
+   14 compound_statement: WHILE expression statement_list . END_CS
+
+    IF        shift, and go to state 4
+    CLASS     shift, and go to state 5
+    END_STMT  shift, and go to state 6
+    BEGIN_CS  shift, and go to state 7
+    END_CS    shift, and go to state 68
+    DEF       shift, and go to state 8
+    WHILE     shift, and go to state 9
+    ID        shift, and go to state 10
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
+
+    statement           go to state 14
+    head_expr           go to state 15
+    compound_statement  go to state 16
+    expression          go to state 17
+    equal_expression    go to state 18
+    assign_expression   go to state 19
+    simple_expression   go to state 20
+    method_call         go to state 21
+    class_def           go to state 22
+    method_def          go to state 23
+    getconstant         go to state 24
+    putobject           go to state 25
+    getlocal            go to state 26
+
+
+state 53
+
+   21 assign_expression: ID ASSIGN assign_expression .
+
+    $default  reduce using rule 21 (assign_expression)
+
+
+state 54
+
+   32 method_call: ID OPEN_PAR CLOSE_PAR .
+
+    $default  reduce using rule 32 (method_call)
+
+
+state 55
+
+   29 argumentlist: OPEN_PAR arguments . CLOSE_PAR
+   31 arguments: arguments . COMMA expression
+
+    CLOSE_PAR  shift, and go to state 69
+    COMMA      shift, and go to state 56
+
+
+state 56
+
+   31 arguments: arguments COMMA . expression
+
+    ID      shift, and go to state 27
+    STRING  shift, and go to state 11
+    OBJECT  shift, and go to state 12
+    NUMBER  shift, and go to state 13
+
+    expression         go to state 70
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
+
+
+state 57
+
+   12 if_statement: IF expression .
+   19 equal_expression: expression . EQUAL expression
+
+    EQUAL  shift, and go to state 41
+
+    $default  reduce using rule 12 (if_statement)
+
+
+state 58
+
+   19 equal_expression: expression . EQUAL expression
+   19                 | expression EQUAL expression .
+
+    EQUAL  shift, and go to state 41
+
+    EQUAL     [reduce using rule 19 (equal_expression)]
+    $default  reduce using rule 19 (equal_expression)
+
+
+state 59
+
+   26 simple_expression: simple_expression send OPEN_PAR . CLOSE_PAR
+   29 argumentlist: OPEN_PAR . arguments CLOSE_PAR
+
+    CLOSE_PAR  shift, and go to state 71
+    ID         shift, and go to state 27
+    STRING     shift, and go to state 11
+    OBJECT     shift, and go to state 12
+    NUMBER     shift, and go to state 13
+
+    expression         go to state 35
+    equal_expression   go to state 18
+    assign_expression  go to state 19
+    simple_expression  go to state 20
+    arguments          go to state 55
+    getconstant        go to state 24
+    putobject          go to state 25
+    getlocal           go to state 26
+
+
+state 60
+
+   27 simple_expression: simple_expression send argumentlist .
+
+    $default  reduce using rule 27 (simple_expression)
+
+
+state 61
+
+   16 optional_else_statement: ELSE . statement_list
+
+    $default  reduce using rule 3 (statement_list)
+
+    statement_list  go to state 72
+
+
+state 62
+
+   13 compound_statement: IF expression statement_list optional_else_statement . END_CS
+
+    END_CS  shift, and go to state 73
+
+
+state 63
+
+   35 class_def: CLASS OBJECT statement_list END_CS .
+
+    $default  reduce using rule 35 (class_def)
+
+
+state 64
+
+   39 argument_def_list: OPEN_PAR CLOSE_PAR .
+
+    $default  reduce using rule 39 (argument_def_list)
+
+
+state 65
+
+   38 argument_def_list: OPEN_PAR argument_def . CLOSE_PAR
+   41 argument_def: argument_def . COMMA getlocal
+
+    CLOSE_PAR  shift, and go to state 74
+    COMMA      shift, and go to state 67
+
+
+state 66
+
+    2 statement_list: statement_list . statement
+   36 method_def: DEF ID argument_def_list statement_list . END_CS
+
+    IF        shift, and go to state 4
+    CLASS     shift, and go to state 5
+    END_STMT  shift, and go to state 6
+    BEGIN_CS  shift, and go to state 7
+    END_CS    shift, and go to state 75
+    DEF       shift, and go to state 8
+    WHILE     shift, and go to state 9
+    ID        shift, and go to state 10
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
+
+    statement           go to state 14
+    head_expr           go to state 15
+    compound_statement  go to state 16
+    expression          go to state 17
+    equal_expression    go to state 18
+    assign_expression   go to state 19
+    simple_expression   go to state 20
+    method_call         go to state 21
+    class_def           go to state 22
+    method_def          go to state 23
+    getconstant         go to state 24
+    putobject           go to state 25
+    getlocal            go to state 26
+
+
+state 67
+
+   41 argument_def: argument_def COMMA . getlocal
+
+    ID  shift, and go to state 48
+
+    getlocal  go to state 76
+
+
+state 68
+
+   14 compound_statement: WHILE expression statement_list END_CS .
+
+    $default  reduce using rule 14 (compound_statement)
+
+
+state 69
+
+   29 argumentlist: OPEN_PAR arguments CLOSE_PAR .
+
+    $default  reduce using rule 29 (argumentlist)
+
+
+state 70
+
+   19 equal_expression: expression . EQUAL expression
+   31 arguments: arguments COMMA expression .
+
+    EQUAL  shift, and go to state 41
+
+    EQUAL     [reduce using rule 31 (arguments)]
+    $default  reduce using rule 31 (arguments)
+
+
+state 71
+
+   26 simple_expression: simple_expression send OPEN_PAR CLOSE_PAR .
+
+    $default  reduce using rule 26 (simple_expression)
+
+
+state 72
+
+    2 statement_list: statement_list . statement
+   16 optional_else_statement: ELSE statement_list .
+
+    IF        shift, and go to state 4
+    CLASS     shift, and go to state 5
+    END_STMT  shift, and go to state 6
+    BEGIN_CS  shift, and go to state 7
+    DEF       shift, and go to state 8
+    WHILE     shift, and go to state 9
+    ID        shift, and go to state 10
+    STRING    shift, and go to state 11
+    OBJECT    shift, and go to state 12
+    NUMBER    shift, and go to state 13
+
+    $default  reduce using rule 16 (optional_else_statement)
+
+    statement           go to state 14
+    head_expr           go to state 15
+    compound_statement  go to state 16
+    expression          go to state 17
+    equal_expression    go to state 18
+    assign_expression   go to state 19
+    simple_expression   go to state 20
+    method_call         go to state 21
+    class_def           go to state 22
+    method_def          go to state 23
+    getconstant         go to state 24
+    putobject           go to state 25
+    getlocal            go to state 26
+
+
+state 73
+
+   13 compound_statement: IF expression statement_list optional_else_statement END_CS .
+
+    $default  reduce using rule 13 (compound_statement)
+
+
+state 74
+
+   38 argument_def_list: OPEN_PAR argument_def CLOSE_PAR .
+
+    $default  reduce using rule 38 (argument_def_list)
+
+
+state 75
+
+   36 method_def: DEF ID argument_def_list statement_list END_CS .
+
+    $default  reduce using rule 36 (method_def)
+
+
+state 76
+
+   41 argument_def: argument_def COMMA getlocal .
+
+    $default  reduce using rule 41 (argument_def)

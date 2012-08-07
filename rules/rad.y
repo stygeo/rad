@@ -31,13 +31,13 @@ char *make_name();
    -----------------------------------*/
 
 %union {
-  char     *str;     // a char string
-  int       num;     // a number
+  char         *str;     // a char string
+  int          num;     // a number
   rd_tree_node *tnode;   // node in the syntax tree
 }
 
 /* Token definitions */
-%token ERROR_TOKEN IF ELSE INPUT ASSIGN EQUAL
+%token ERROR_TOKEN IF ELSE INPUT ASSIGN EQUAL CLASS
 %token CONCAT END_STMT OPEN_PAR CLOSE_PAR
 %token BEGIN_CS END_CS DEF THEN END COMMA RETURN
 %token WHILE
@@ -49,6 +49,7 @@ char *make_name();
 %type <tnode>  equal_expression assign_expression simple_expression
 %type <tnode>  if_statement block_start head_expr optional_else_statement
 %type <tnode>  getlocal putobject getconstant send argumentlist arguments
+%type <tnode>  class_def method_call method_def argument_def_list argument_def
 
 %expect 5
 %expect-rr 0
@@ -70,9 +71,12 @@ statement_list
 
 statement
       : END_STMT                    {$$ = new rd_tree_node(EMPTY_STMT);}
+      | class_def                   {$$ = $1;}
+      | method_def                  {$$ = $1;}
       | head_expr if_statement      {$$ = new rd_tree_node(BLOCK_STMT, $2, $1);}
       | head_expr END_STMT          {$$ = $1;}
       | compound_statement          {$$ = $1;}
+      | method_call                 {$$ = $1;}
       ;
 
 head_expr
@@ -139,8 +143,8 @@ simple_expression
       | simple_expression send argumentlist {$$ = new rd_tree_node(COMP_STMT, $3, $1, $2);}
       | simple_expression send OPEN_PAR CLOSE_PAR {$$ = new rd_tree_node(COMP_STMT, NULL, $1, $2);}
       */
+      | simple_expression send OPEN_PAR CLOSE_PAR {$$ = new rd_tree_node(COMP_STMT, $1, $2, NULL);}
       | simple_expression send argumentlist {$$ = new rd_tree_node(COMP_STMT, $1, $2, $3);}
-      | simple_expression send OPEN_PAR CLOSE_PAR {$$ = new rd_tree_node(COMP_STMT, $1, $2);}
       ;
 
 argumentlist
@@ -148,12 +152,35 @@ argumentlist
       | OPEN_PAR arguments CLOSE_PAR {$$ = new rd_tree_node(ARGUMENT_LIST, $2);}
       ;
 arguments
-      : expression    {$$ = $1; _argc++;}
+      : expression    {$$ = $1;}
       | arguments COMMA expression  {$$ = new rd_tree_node(ARGUMENT, $3, $1); _argc++;}
       ;
 
+method_call
+      : ID OPEN_PAR CLOSE_PAR   {$$ = new rd_tree_node(SEND_STMT, NULL); $$->constant = $1;}
+      | ID argumentlist         {$$ = new rd_tree_node(SEND_STMT, $2); $$->constant = $1;}
+      ;
+
 send
-      : METHOD                      {$$ = new rd_tree_node(SEND_STMT); $$->constant = $1; $$->argc = _argc;}
+      : METHOD                      {$$ = new rd_tree_node(SEND_STMT, NULL); $$->constant = $1;}
+      ;
+
+class_def
+      : CLASS OBJECT statement_list END_CS {$$ = new rd_tree_node(CLASS_DEF, $3); $$->constant = $2;}
+      ;
+
+method_def
+      : DEF ID argument_def_list statement_list END_CS {$$ = new rd_tree_node(METHOD_DEF, $4, $3); $$->constant = $2;}
+      ;
+
+argument_def_list
+      : argument_def                       {$$ = new rd_tree_node(ARGUMENT_LIST, $1);}
+      | OPEN_PAR argument_def CLOSE_PAR    {$$ = new rd_tree_node(ARGUMENT_LIST, $2);}
+      | OPEN_PAR CLOSE_PAR                 {$$ = new rd_tree_node(ARGUMENT_LIST, NULL);}
+      ;
+argument_def
+      : getlocal                           {$$ = new rd_tree_node(ARGUMENT_DEF, $1);}
+      | argument_def COMMA getlocal        {$$ = new rd_tree_node(ARGUMENT_DEF, $3, $1);}
       ;
 
 getconstant

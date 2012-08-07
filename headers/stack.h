@@ -31,7 +31,7 @@ class rd_stack {
       puts("| Stack                       |");
       puts("+-----------------------------+");
       while(start != NULL) {
-        printf("| %-27d |\n", start->data->int_val);
+        printf("| %-27s |\n", start->data->send("to_s", 0)->str_val);
         start = start->next;
       }
       puts("+-----------------------------+");

@@ -24,6 +24,9 @@ enum rd_node_type {
   COMP_STMT,
   ARGUMENT_LIST,
   ARGUMENT,
+  CLASS_DEF,
+  METHOD_DEF,
+  ARGUMENT_DEF,
 };
 
 enum rd_data_type {

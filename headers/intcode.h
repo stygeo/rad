@@ -14,6 +14,9 @@ enum rd_opcode  {
   OP_JMP,
   OP_GET_CONST,
   OP_SEND,
+  OP_ARG,
+  OP_CLASS_DEF,
+  OP_METHOD_DEF,
 
   JUMPTARGET,
 };

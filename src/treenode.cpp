@@ -23,6 +23,9 @@ char *name[] = {
   "compstmt",
   "argumentlist",
   "argument",
+  "method def",
+  "argument def list",
+  "argument def",
 };
 
 // Numbers of children per node type

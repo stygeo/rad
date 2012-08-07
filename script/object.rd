@@ -1,9 +1,14 @@
-a = "test"
-b = "hello"
-c = 1
-d = 2
-Object.puts(a, b, c, d)
+class Epic
+  def test(a)
+  end
 
-if 1 == 1
-  Object.puts("is 1")
+  def hello()
+    Object.puts("Hello");
+  end
 end
+
+a = Epic.new()
+a.test()
+a.hello()
+Object.puts("hell", a.to_s())
+Object.puts(a.to_s())

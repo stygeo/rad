@@ -12,6 +12,7 @@ rd_object_space *rd_object_space::get() {
 rd_object_space::rd_object_space() {
   stack = new v_stack();
   object_stack = new o_stack();
+  constants = new o_stack();
 }
 
 rd_object_space::~rd_object_space() {
