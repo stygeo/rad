@@ -9,12 +9,12 @@ int _new_object_id() {
   return _global_current_object_id++;
 }
 
-VALUE *return_new_value(int) {
-  return new VALUE(CURRENT_OBJECT);
+VALUE *return_new_value(int argc, VALUE *argv, VALUE *self) {
+  return new VALUE(self);
 }
 
-VALUE *default_to_s(int) {
-  return rd_new_string((char*)CURRENT_OBJECT->name);
+VALUE *default_to_s(int argc, VALUE *argv, VALUE *self) {
+  return rd_new_string((char*)self->name);
 }
 
 VALUE::VALUE() : object_id(_new_object_id()) {
@@ -49,8 +49,8 @@ VALUE *rd_define_class(const char *name, VALUE *super) {
   val->type = T_CLASS;
   val->name = name;
 
-  val->define_method("new", return_new_value, 0);
-  val->define_method("to_s", default_to_s, 0);
+  val->define_method("new", return_new_value);
+  val->define_method("to_s", default_to_s);
 
   ADD_CONST(val);
 
@@ -63,13 +63,40 @@ VALUE::VALUE(const VALUE *val) : object_id(_new_object_id()) {
   methods = val->methods;
 }
 
+bool VALUE::respond_to(char *method) {
+  rd_method *meth = get_method(method);
+
+  if(meth) return true;
+  return false;
+}
+
+rd_method *VALUE::get_method(char *method) {
+  for(auto m : methods) {
+    if(strcmp(m.first, method) == 0) {
+      return m.second;
+    }
+  }
+
+  return NULL;
+}
+
+VALUE *VALUE::send(char *method, int argc, VALUE *argv) {
+  rd_method *meth = get_method(method);
+  if(meth) {
+    return meth->perform(argc, argv, argv);
+  }
+
+  printf("Undefined variable or method: `%s' for :%s (NameError)\n", method, name);
+  exit(1);
+}
+
 VALUE *VALUE::send(char *method, int argc, ...) {
   for(auto m : methods) {
     if(strcmp(m.first, method) == 0) {
-      if( m.second->argc != -1 && argc != m.second->argc ) {
-        printf("ArgumentError: wrong number of argumens (%d for %d)", argc, m.second->argc);
-        exit(1);
-      }
+      //if( m.second->argc != -1 && argc != m.second->argc ) {
+      //  printf("ArgumentError: wrong number of argumens (%d for %d)", argc, m.second->argc);
+      //  exit(1);
+      //}
 
       /*
       if(argc != 0) {
@@ -83,9 +110,9 @@ VALUE *VALUE::send(char *method, int argc, ...) {
       }
       */
 
-      PUSH_CURRENT_OBJ(this);  // Push this object as the current object
-        VALUE *ret = m.second->perform(argc);
-      POP_CURRENT_OBJ();         // Restore previous current object
+      // Todo
+      VALUE *argv;
+      VALUE *ret = m.second->perform(argc, argv, this);
 
       return ret;
     }
@@ -95,12 +122,11 @@ VALUE *VALUE::send(char *method, int argc, ...) {
   exit(1);
 }
 
-void VALUE::define_method(char *_method, VALUE *(*func)(int argc), int argc) {
+void VALUE::define_method(char *_method, VALUE *(*func)(int argc, VALUE *argv, VALUE *self)) {
   rd_method *method = new rd_method();
   method->name = _method;
   method->type = T_C_FUNC;
   method->func = func;
-  method->argc = argc;
 
   methods[_method] = method;
 }
@@ -110,14 +136,13 @@ void VALUE::define_method(char *_method, std::vector<rd_instr*> body, int argc) 
   method->name = _method;
   method->type = T_R_FUNC;
   method->body = body;
-  method->argc = argc;
 
   methods[_method] = method;
 }
 
-VALUE *rd_method::perform(int argc) {
+VALUE *rd_method::perform(int argc, VALUE *argv, VALUE *self) {
   if(func != NULL) {
-    return func(argc);
+    return func(argc, argv, self);
   } else if(body.size()) {
     return rd_new_string("nil");
   }

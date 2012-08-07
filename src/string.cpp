@@ -7,18 +7,18 @@
 extern VALUE *rd_class;
 extern VALUE *rd_string;
 
-VALUE *string_to_s(int) {
-  return CURRENT_OBJECT;
+VALUE *string_to_s(int, VALUE *argv, VALUE *self) {
+  return self;
 }
 
-VALUE *string_to_i(int) {
-  return rd_new_number(atoi(CURRENT_OBJECT->str_val));
+VALUE *string_to_i(int, VALUE *argv, VALUE *self) {
+  return rd_new_number(atoi(self->str_val));
 }
 
 void init_rd_string() {
   rd_string = rd_define_class("String", rd_class);
-  rd_string->define_method("to_s", string_to_s, 0);
-  rd_string->define_method("to_i", string_to_i, 0);
+  rd_string->define_method("to_s", string_to_s);
+  rd_string->define_method("to_i", string_to_i);
 }
 
 VALUE *rd_new_string(char *str) {

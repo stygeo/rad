@@ -20,6 +20,7 @@ VALUE *rd_true;
 VALUE *rd_false;
 VALUE *rd_string;
 VALUE *rd_object;
+VALUE *rd_array;
 
 int errors = 0;
 void show_help() {
@@ -68,6 +69,7 @@ int main(int argc, char *argv[]) {
   init_rd_number();
   init_rd_boolean();
   init_rd_string();
+  init_rd_array();
 
   yyin = NULL;
   if(argc >= 2) {

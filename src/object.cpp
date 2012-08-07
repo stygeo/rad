@@ -10,18 +10,20 @@
 extern VALUE *rd_class;
 extern VALUE *rd_object;
 
-VALUE *object_to_s(int) {
-  return rd_new_string("Object");
+void rd_scan_args(int argc, VALUE *argv, const char *format, ...) {
+// TODO
 }
 
-VALUE *object_puts(int argc) {
-  for(int i = 0; i < argc; i++) {
-    VALUE *pval = ST_POP();
+VALUE *object_puts(int argc, VALUE *argv, VALUE *self) {
+  VALUE *objects[argc+1];
+
+  rd_scan_args(argc, argv, "0:0:*", &objects); // TODO
+  for(auto val : self->arr_val) {
     char *str;
-    if(pval->type == T_STRING)
-      str = pval->str_val;
+    if(val->type == T_STRING)
+      str = val->str_val;
     else
-      str = pval->send("to_s", 0)->str_val;
+      str = val->send("to_s", 0)->str_val;
 
     printf("%s\n", str);
   }
@@ -31,8 +33,7 @@ VALUE *object_puts(int argc) {
 
 void init_rd_object() {
   rd_object = rd_define_class("Object", rd_class);
-  rd_object->define_method("to_s", object_to_s, 0);
-  rd_object->define_method("puts", object_puts, -1);
+  rd_object->define_method("puts", object_puts);
 }
 
 VALUE *rd_new_object() {

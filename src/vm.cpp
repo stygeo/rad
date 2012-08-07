@@ -2,8 +2,7 @@
 #include <string.h>
 
 #include "vm.h"
-#include "rd_value.h"
-#include "object.h"
+#include "types.h"
 #include "raise.h"
 
 extern rd_int_instr *intcode;
@@ -113,6 +112,15 @@ void rd_vm::stat() {
 extern VALUE *rd_true;
 extern VALUE *rd_false;
 
+VALUE *stack_to_arr(int argc) {
+  VALUE *argv = rd_new_array();
+  for(int i = 0; i < argc; i++) {
+    argv->arr_val.push_back(ST_POP());
+  }
+
+  return argv;
+}
+
 void rd_vm::execute() {
   VALUE *pval;
   int ip = 0;  // Instruction pointer reset = 0
@@ -201,7 +209,9 @@ void rd_vm::execute() {
       {
         pval = ST_POP();
 
-        VALUE *ret_value = pval->send(instr->constant, instr->argc);
+        VALUE *argv = stack_to_arr(instr->argc);
+
+        VALUE *ret_value = pval->send(instr->constant, instr->argc, argv);
 
         stack->push(ret_value);
         break;
@@ -232,7 +242,7 @@ void rd_vm::execute() {
         break;
       }
       case OP_METHOD_DEF:
-        CURRENT_OBJECT->define_method(instr->constant, NULL, 0);
+        CURRENT_OBJECT->define_method(instr->constant, NULL);
         break;
     }
     pval = NULL;

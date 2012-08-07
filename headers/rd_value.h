@@ -11,6 +11,7 @@ enum T_TYPE {
   T_NIL,
   T_STRING,
   T_NUMBER,
+  T_ARRAY,
   T_CLASS,
 
   T_C_FUNC,
@@ -21,10 +22,9 @@ struct rd_method {
   T_TYPE type;
 
   const char *name;
-  int argc;
-  VALUE *(*func)(int argc);
+  VALUE *(*func)(int argc, VALUE *argv, VALUE *self);
   std::vector<rd_instr*> body;
-  VALUE *perform(int argc);
+  VALUE *perform(int argc, VALUE *argv, VALUE *self);
 };
 
 class VALUE {
@@ -37,12 +37,17 @@ class VALUE {
     VALUE *super;
 
     VALUE *send(char *method, int argc, ...);
-    void define_method(char *method, VALUE *(*func)(int argc), int argc);
+    VALUE *send(char *method, int argc, VALUE *argv);
+    bool respond_to(char *method);
+    rd_method *get_method(char *method);
+
+    void define_method(char *method, VALUE *(*func)(int argc, VALUE *argv, VALUE *self));
     void define_method(char *method, std::vector<rd_instr*> body, int argc);
 
     std::map<char *, rd_method*> methods;
     char *str_val;
     int   int_val;
+    std::vector<VALUE *> arr_val;
 
     const int object_id;
 };
