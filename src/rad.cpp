@@ -19,10 +19,6 @@ void error(char *format, ...) {
   printf("\n");
 }
 
-void error_summary() {
-  printf("%d error(s) were found.\n", errors);
-}
-
 void yyerror(const char *msg) {
   error((char*)msg);
 }
@@ -35,6 +31,7 @@ extern "C" int yywrap(void) {
 }
 
 void rad_init() {
+  yyin = NULL;
   rad_init_types();
 
   rd_vm::get();
@@ -43,12 +40,16 @@ void rad_init() {
 void rad_script(const char *name) {
 }
 
-FILE *rd_load_file() {
+void rd_load_file(const char *file_name) {
+  yyin = fopen(file_name, "rt");
 }
 
 void rad_exec() {
+  if(yyin == NULL) {
+    yyin = stdin;
+  }
+
   yyparse();
-  error_summary();
 
 #ifdef SYN_TREE
   tree->show();

@@ -57,7 +57,10 @@ vm.o: src/vm.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
 
 clean:
-	rm $(OBJECTS) *.so rad
+	rm $(OBJECTS) lib/* rad ird
 
-exec:
-	c++ -std=c++11 -g -I. -Iheaders -lreadline -Llib -lrad -DDEBUG main.cpp src/ird.cpp -o rad
+rad:
+	c++ -std=c++11 -g -I. -Iheaders -Llib -lrad -DDEBUG rad_src/main.cpp -o rad
+ird:
+	c++ -std=c++11 -g -I. -Iheaders -lreadline -Llib -lrad -DDEBUG ird_src/main.cpp ird_src/ird.cpp -o ird
+

@@ -2,16 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "rad.h"
 #include "ird.h"
-#include "lex.h"
-#include "parse.h"
-#include "vm.h"
-#include "config.h"
-#include "object_space.h"
-
-extern int errors;
-extern SyntTree tree;
-extern rd_int_instr *intcode;
 
 static char **ird_completion(const char *, int, int);
 char *ird_generator(const char *, int);
@@ -27,33 +19,19 @@ void init_ird(int argc, char *argv[]) {
 
   char *buf;
   rl_attempted_completion_function = ird_completion;
-  rd_vm vm;
 
   int count = 1;
   char *prompt;
   sprintf(prompt, "\nrad :%03d > ", count);
   while((buf = readline(prompt)) != NULL) {
     rl_bind_key('\t', rl_complete);
-    // Initialize a new temp buffer which adds a \n END_STMT to the end of the line.
-    char *nbuf;
-    sprintf(nbuf, "%s\n", buf);
-
     if(check_quit(buf))
       break;
     if(buf[0] != 0) {
       add_history(buf);
-      yy_scan_string(nbuf);
-      yyparse();
 
-      if(!errors) {
-        intcode = rd_mk_int_code(tree);
-        intcode->number(1);
-
-        vm.compile();
-        vm.stat();
-        vm.execute();
-      }
-      printf(" => \"%s\"", CURRENT_OBJECT->send("to_s", 0)->str_val);
+      rd_eval_string(buf);
+      rad_exec();
     }
 
     count++;

@@ -5,17 +5,8 @@
 
 #include <iostream.h>
 #include <stdarg.h>
-#include "lex.h"
-#include "parse.h"
-#include "treenode.h"
-#include "intcode.h"
-#include "types.h"
-#include "ird.h"
 #include "rad.h"
 
-#include "vm.h"
-
-int errors = 0;
 void show_help() {
   printf("Usage: rad [switches] [--] [programfile] [arguments]\n");
   printf("  %-20s one line script\n", "-e 'command'");
@@ -27,37 +18,9 @@ void show_help() {
   printf("  %-20s print version number\n", "--version");
 }
 
-void error(char *format, ...) {
-  va_list args;
-
-  errors++;
-  printf("Line: %d: ", lineno);
-  va_start(args, format);
-  vfprintf(stdout, format, args);
-  va_end(args);
-  printf("\n");
-}
-
-void error_summary() {
-  printf("%d error(s) were found.\n", errors);
-}
-
-void yyerror(const char *msg) {
-  error((char*)msg);
-}
-
-// This function is called by the lexer when the end-of-file
-// is reached; you can reset yyin (the input FILE*) and return 0
-// if you want to process another file; otherwise just return 1.
-extern "C" int yywrap(void) {
-  return 1;
-}
-
-
 int main(int argc, char *argv[]) {
   rad_init();
 
-  yyin = NULL;
   if(argc >= 2) {
     if(strcmp(argv[1], "-h") == 0) {
       show_help();
@@ -73,22 +36,15 @@ int main(int argc, char *argv[]) {
     }
     else if(strcmp(argv[1], "-e") == 0) {
       if(argc >= 3) {
-        yyin = yy_scan_string(argv[2]);
+        rd_eval_string(argv[2]);
       } else {
         printf("rad: no code specified for -e");
         exit(1);
       }
     }
-    else if(strcmp(argv[1], "-ird") == 0) {
-      init_ird(argc, argv);
-    }
     else {
-      yyin = fopen(argv[1], "rt");
+      rd_load_file(argv[1]);
     }
-  }
-  if(yyin == NULL) {
-    printf("Rad(on) v. %d.%d.%d\n", RD_VER_MAJOR, RD_VER_MINOR, RD_VER_PATCH);
-    yyin = stdin;
   }
 
   rad_exec();
