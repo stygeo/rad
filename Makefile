@@ -5,17 +5,17 @@ LDFLAGS  := -shared
 INCLUDES := -Iheaders -I.
 LIBS     := -lreadline
 SRC      := src
-OBJECTS  :=objects/array.o objects/boolean.o objects/class.o objects/global.o objects/intcode.o objects/lex.o objects/number.o objects/object.o objects/object_space.o objects/parser.o \
-	         objects/rad.o objects/raise.o objects/rd_value.o objects/string.o objects/symtab.o objects/treenode.o objects/types.o objects/vm.o
+OBJECTS  :=objects/array.o objects/boolean.o objects/class.o objects/global.o objects/intcode.o \
+	         objects/lex.o objects/number.o objects/object.o objects/object_space.o objects/parser.o \
+	         objects/rad.o objects/raise.o objects/rd_value.o objects/string.o objects/symtab.o \
+					 objects/treenode.o objects/types.o objects/vm.o
+
 SOURCES  :=src/array.cpp src/boolean.cpp src/class.cpp src/global.cpp src/intcode.cpp src/lex.cpp \
-	         src/number.cpp src/object.cpp src/object_space.cpp src/parser.cpp src/rad.cpp src/raise.cpp src/rd_value.cpp \
-					 src/string.cpp src/symtab.cpp src/treenode.cpp src/types.cpp src/vm.cpp
+	         src/number.cpp src/object.cpp src/object_space.cpp src/parser.cpp src/rad.cpp src/raise.cpp \
+					 src/rd_value.cpp src/string.cpp src/symtab.cpp src/treenode.cpp src/types.cpp src/vm.cpp
 
 all: $(OBJECTS)
 	$(CXX) $(LDFLAGS) $(OBJECTS) -o lib/$(LIB)
-
-#$(OBJECTS): $(SOURCES)
-#	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
 
 objects/array.o: src/array.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
