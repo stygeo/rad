@@ -1,5 +1,5 @@
 CXX      := c++
-CXXFLAGS := -g -c -fPIC -std=c++11
+CXXFLAGS := -g -c -fPIC -std=c++11 -Wno-switch -Wno-deprecated-writable-strings
 LIB      := librad.so
 LDFLAGS  := -shared
 INCLUDES := -Iheaders -I.
@@ -23,41 +23,41 @@ lib: $(OBJECTS)
 
 objects/array.o: src/array.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/boolean.o: src/boolean.cpp
+objects/boolean.o: src/boolean.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/class.o: src/class.cpp
+objects/class.o: src/class.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/global.o: src/global.cpp
+objects/global.o: src/global.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/intcode.o: src/intcode.cpp
+objects/intcode.o: src/intcode.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/ird.o: src/ird.cpp
+objects/ird.o: src/ird.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/lex.o: src/lex.cpp
+objects/lex.o: src/lex.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/number.o: src/number.cpp
+objects/number.o: src/number.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/object.o: src/object.cpp
+objects/object.o: src/object.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/object_space.o: src/object_space.cpp
+objects/object_space.o: src/object_space.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/parser.o: src/parser.cpp
+objects/parser.o: src/parser.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/rad.o: src/rad.cpp
+objects/rad.o: src/rad.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/raise.o: src/raise.cpp
+objects/raise.o: src/raise.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/rd_value.o: src/rd_value.cpp
+objects/rd_value.o: src/rd_value.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/string.o: src/string.cpp
+objects/string.o: src/string.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/symtab.o: src/symtab.cpp
+objects/symtab.o: src/symtab.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/treenode.o: src/treenode.cpp
+objects/treenode.o: src/treenode.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/types.o: src/types.cpp
+objects/types.o: src/types.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-	objects/vm.o: src/vm.cpp
+objects/vm.o: src/vm.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
 
 clean:
@@ -65,7 +65,7 @@ clean:
 	rm -rf bin/*
 
 rad:
-	c++ -std=c++11 -g -I. -Iheaders -Llib -lrad -DDEBUG rad_src/main.cpp -o bin/rad
+	c++ -std=c++11 -g -I. -Iheaders -Llib -lrad -DDEBUG -Wno-switch -Wno-deprecated-writable-strings rad_src/main.cpp -o bin/rad
 ird:
-	c++ -std=c++11 -g -I. -Iheaders -lreadline -Llib -lrad -DDEBUG ird_src/main.cpp ird_src/ird.cpp -o bin/ird
+	c++ -std=c++11 -g -I. -Iheaders -lreadline -Llib -lrad -DDEBUG -Wno-switch -Wno-deprecated-writable-strings ird_src/main.cpp ird_src/ird.cpp -o bin/ird
 

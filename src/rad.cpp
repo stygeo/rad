@@ -40,10 +40,6 @@ void rad_init() {
 void rad_script(const char *name) {
 }
 
-void rd_load_file(const char *file_name) {
-  yyin = fopen(file_name, "rt");
-}
-
 void rad_exec() {
   if(yyin == NULL) {
     yyin = stdin;
@@ -68,8 +64,15 @@ void rad_exec() {
   vm->execute();
 }
 
+void rad_options(int argc, char *argv[]) {}
+
 void rd_eval_string(const char *script) {
   char *nbuf;
   sprintf(nbuf, "%s\n", script);
   yy_scan_string(nbuf);
 }
+
+void rd_load_file(const char *file_name) {
+  yyin = fopen(file_name, "rt");
+}
+

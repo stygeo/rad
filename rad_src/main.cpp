@@ -3,7 +3,7 @@
 #include "config.h"
 #include "args.h"
 
-#include <iostream.h>
+#include <iostream>
 #include <stdarg.h>
 #include "rad.h"
 
