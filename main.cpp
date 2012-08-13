@@ -11,16 +11,9 @@
 #include "intcode.h"
 #include "types.h"
 #include "ird.h"
+#include "rad.h"
 
 #include "vm.h"
-
-VALUE *rd_number;
-VALUE *rd_class;
-VALUE *rd_true;
-VALUE *rd_false;
-VALUE *rd_string;
-VALUE *rd_object;
-VALUE *rd_array;
 
 int errors = 0;
 void show_help() {
@@ -64,12 +57,7 @@ SyntTree tree;
 rd_int_instr *intcode;
 
 int main(int argc, char *argv[]) {
-  init_rd_class();
-  init_rd_object();
-  init_rd_number();
-  init_rd_boolean();
-  init_rd_string();
-  init_rd_array();
+  rad_init();
 
   yyin = NULL;
   if(argc >= 2) {

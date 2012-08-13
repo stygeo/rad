@@ -2,6 +2,7 @@
 *.slo
 *.lo
 *.o
+objects/*.o
 rad
 
 # Compiled Dynamic libraries

@@ -6,3 +6,5 @@
 #include "str.h"
 #include "boolean.h"
 #include "array.h"
+
+void rad_init_types();

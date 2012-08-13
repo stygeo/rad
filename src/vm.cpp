@@ -112,7 +112,7 @@ void rd_vm::stat() {
 extern VALUE *rd_true;
 extern VALUE *rd_false;
 
-VALUE *stack_to_arr(int argc) {
+VALUE *pop_arguments(int argc) {
   VALUE *argv = rd_new_array();
   for(int i = 0; i < argc; i++) {
     argv->arr_val.push_back(ST_POP());
@@ -209,7 +209,7 @@ void rd_vm::execute() {
       {
         pval = ST_POP();
 
-        VALUE *argv = stack_to_arr(instr->argc);
+        VALUE *argv = pop_arguments(instr->argc);
 
         VALUE *ret_value = pval->send(instr->constant, instr->argc, argv);
 
