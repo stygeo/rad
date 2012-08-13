@@ -20,8 +20,10 @@ class rd_vm {
     void execute();
     void reset();
     void stat();
+    static rd_vm *get();
   private:
     vm_stack *stack;
     rd_sym_tab *sym_tab;
     std::vector<rd_instr*> instrs;
+    static rd_vm *_singleton;
 };

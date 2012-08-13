@@ -53,8 +53,6 @@ extern "C" int yywrap(void) {
   return 1;
 }
 
-SyntTree tree;
-rd_int_instr *intcode;
 
 int main(int argc, char *argv[]) {
   rad_init();
@@ -93,26 +91,7 @@ int main(int argc, char *argv[]) {
     yyin = stdin;
   }
 
-  yyparse();
-  error_summary();
-
-#ifdef SYN_TREE
-  tree->show();
-#endif
-
-  if(!errors) {
-    intcode = rd_mk_int_code(tree);
-    intcode->number(1);
-
-    rd_vm vm;
-    vm.compile();
-#ifdef DEBUG
-    vm.stat();
-#endif
-    vm.execute();
-
-    return 0;
-  }
+  rad_exec();
 
   return 1;
 }

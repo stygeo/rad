@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string.h>
 
+#include "lex.h"
+#include "parse.h"
 #include "vm.h"
 #include "types.h"
 #include "raise.h"
@@ -8,6 +10,17 @@
 extern rd_int_instr *intcode;
 extern std::vector<VALUE*> constants;
 extern rd_exception MethodError;
+
+rd_vm *rd_vm::_singleton;
+rd_vm *rd_vm::get() {
+  if(_singleton == NULL) {
+    _singleton = new rd_vm();
+  }
+
+  return _singleton;
+}
+
+///////////// VM //////////////////
 
 rd_vm::rd_vm() {
   sym_tab = new rd_sym_tab();
@@ -100,6 +113,10 @@ void rd_vm::compile() {
     instrs.push_back(instr);
     cinstr = cinstr->next;
   }
+
+#ifdef DEBUG
+    stat();
+#endif
 }
 
 void rd_vm::stat() {
