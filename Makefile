@@ -6,54 +6,58 @@ INCLUDES := -Iheaders -I.
 LIBS     := -lreadline
 SRC      := src
 OBJECTS  :=objects/array.o objects/boolean.o objects/class.o objects/global.o objects/intcode.o \
-	         objects/lex.o objects/number.o objects/object.o objects/object_space.o objects/parser.o \
-	         objects/rad.o objects/raise.o objects/rd_value.o objects/string.o objects/symtab.o \
-					 objects/treenode.o objects/types.o objects/vm.o
+	objects/lex.o objects/number.o objects/object.o objects/object_space.o objects/parser.o \
+	objects/rad.o objects/raise.o objects/rd_value.o objects/string.o objects/symtab.o \
+	objects/treenode.o objects/types.o objects/vm.o
 
 SOURCES  :=src/array.cpp src/boolean.cpp src/class.cpp src/global.cpp src/intcode.cpp src/lex.cpp \
-	         src/number.cpp src/object.cpp src/object_space.cpp src/parser.cpp src/rad.cpp src/raise.cpp \
-					 src/rd_value.cpp src/string.cpp src/symtab.cpp src/treenode.cpp src/types.cpp src/vm.cpp
+	src/number.cpp src/object.cpp src/object_space.cpp src/parser.cpp src/rad.cpp src/raise.cpp \
+	src/rd_value.cpp src/string.cpp src/symtab.cpp src/treenode.cpp src/types.cpp src/vm.cpp
 
-all: $(OBJECTS)
+.PHONY : lib ird rad
+
+all: lib rad ird
+
+lib: $(OBJECTS)
 	$(CXX) $(LDFLAGS) $(OBJECTS) -o lib/$(LIB)
 
 objects/array.o: src/array.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/boolean.o: src/boolean.cpp
+	objects/boolean.o: src/boolean.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/class.o: src/class.cpp
+	objects/class.o: src/class.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/global.o: src/global.cpp
+	objects/global.o: src/global.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/intcode.o: src/intcode.cpp
+	objects/intcode.o: src/intcode.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/ird.o: src/ird.cpp
+	objects/ird.o: src/ird.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/lex.o: src/lex.cpp
+	objects/lex.o: src/lex.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/number.o: src/number.cpp
+	objects/number.o: src/number.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/object.o: src/object.cpp
+	objects/object.o: src/object.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/object_space.o: src/object_space.cpp
+	objects/object_space.o: src/object_space.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/parser.o: src/parser.cpp
+	objects/parser.o: src/parser.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/rad.o: src/rad.cpp
+	objects/rad.o: src/rad.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/raise.o: src/raise.cpp
+	objects/raise.o: src/raise.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/rd_value.o: src/rd_value.cpp
+	objects/rd_value.o: src/rd_value.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/string.o: src/string.cpp
+	objects/string.o: src/string.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/symtab.o: src/symtab.cpp
+	objects/symtab.o: src/symtab.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/treenode.o: src/treenode.cpp
+	objects/treenode.o: src/treenode.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/types.o: src/types.cpp
+	objects/types.o: src/types.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
-objects/vm.o: src/vm.cpp
+	objects/vm.o: src/vm.cpp
 	$(CXX)  $(INCLUDES) $(CXXFLAGS) $< -o $@
 
 clean:
