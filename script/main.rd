@@ -13,6 +13,7 @@ if a == b
 
   test1 = "epic"
   test2 = "epic"
+
   if test1 == test2
     puts "it should come here"
     puts "Well hello thar"

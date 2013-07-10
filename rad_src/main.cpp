@@ -20,6 +20,7 @@ void show_help() {
 
 int main(int argc, char *argv[]) {
   rad_init();
+  rad_options(argc, argv);
 
   if(argc >= 2) {
     if(strcmp(argv[1], "-h") == 0) {

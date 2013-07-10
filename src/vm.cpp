@@ -169,6 +169,7 @@ void rd_vm::execute() {
         rd_sym_desc *sd = sym_tab->find(instr->constant);
         // Pop stack
         pval = stack->pop();
+        printf("Set local(pop): %s\n ", pval->name);
 
         if(sd == NULL) {
           // Undefined variable, create new
@@ -185,8 +186,10 @@ void rd_vm::execute() {
       case OP_GET_LOCAL:
       {
         // Find variable
+        printf("local const: %s\n", instr->constant);
         rd_sym_desc *t = sym_tab->find(instr->constant);
         VALUE *val;
+        printf("local: %s\n", t->val->name);
 
         if(t == NULL) {
           rd_raise(MethodError, "Undefined variable or method: `%s' (NameError)\n", instr->constant);
@@ -200,11 +203,13 @@ void rd_vm::execute() {
       }
       case OP_GET_CONST:
       {
+        printf("Get CONST: %s\n", instr->constant);
         VALUE *constant = rd_find_constant(instr->constant);
         if(constant == NULL) {
           rd_raise(MethodError, "NameError: Uninitialized constant %s\n", instr->constant);
         }
-        ST_PUSH(constant);
+        stack->push(constant);
+        printf("Pushed constant: %s\n", constant->name);
 
         break;
       }
@@ -224,9 +229,9 @@ void rd_vm::execute() {
       }
       case OP_SEND:
       {
-        pval = ST_POP();
+        pval = stack->pop();
 
-        VALUE *argv = pop_arguments(instr->argc);
+        VALUE *argv;// = pop_arguments(instr->argc);
 
         VALUE *ret_value = pval->send(instr->constant, instr->argc, argv);
 
